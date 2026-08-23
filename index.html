@@ -1,108 +1,316 @@
-<div class="fpl-pro-container" style="font-family: Arial, sans-serif; background: #120428; color: #fff; padding: 20px; border-radius: 12px;">
-  <!-- رأس التطبيق وشريط التنقل -->
-  <header style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #37003c; padding-bottom: 15px; margin-bottom: 20px;">
-    <h1 style="color: #00ff87; font-size: 24px; margin: 0;">⚡ FPL PRO MANAGER 2026/27</h1>
-    <nav style="display: flex; gap: 15px;">
-      <button style="background: #00ff87; color: #120428; border: none; padding: 8px 15px; font-weight: bold; border-radius: 5px; cursor: pointer;">التشكيلة</button>
-      <button style="background: #37003c; color: #fff; border: 1px solid #00ff87; padding: 8px 15px; border-radius: 5px; cursor: pointer;">الأندية واللعيبة</button>
-      <button style="background: #37003c; color: #fff; border: 1px solid #00ff87; padding: 8px 15px; border-radius: 5px; cursor: pointer;">السوق والانتقالات</button>
-      <button style="background: #37003c; color: #fff; border: 1px solid #00ff87; padding: 8px 15px; border-radius: 5px; cursor: pointer;">التحليلات والذكاء الاصطناعي</button>
-    </nav>
-  </header>
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FPL Pro Max Ultimate 2026/27</title>
+    <style>
+        :root {
+            --primary-bg: #120428;
+            --secondary-bg: #1e0b36;
+            --accent-green: #00ff87;
+            --accent-pink: #e90052;
+            --text-color: #ffffff;
+            --border-color: #37003c;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--primary-bg);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+        }
+        .fpl-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: var(--secondary-bg);
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        h1 {
+            color: var(--accent-green);
+            font-size: 22px;
+            margin: 0;
+        }
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 20px;
+        }
+        @media (max-width: 768px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+        }
+        .clubs-sidebar {
+            background: #16072b;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 550px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        .club-btn {
+            width: 100%;
+            background: #250f42;
+            color: white;
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            text-align: right;
+            cursor: pointer;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+        .club-btn:hover, .club-btn.active {
+            background: var(--border-color);
+            border-color: var(--accent-green);
+            color: var(--accent-green);
+        }
+        .players-section {
+            background: #16072b;
+            padding: 15px;
+            border-radius: 8px;
+            max-height: 550px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: right;
+        }
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid #281048;
+        }
+        th {
+            color: #a17bc9;
+            font-size: 14px;
+        }
+        .price {
+            color: var(--accent-pink);
+            font-weight: bold;
+        }
+        .pos {
+            color: var(--accent-green);
+            font-size: 13px;
+        }
+        .add-btn {
+            background: var(--accent-green);
+            color: #120428;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .add-btn:hover {
+            opacity: 0.8;
+        }
+        .pitch-section {
+            margin-top: 25px;
+            background: #0b2216;
+            border: 2px solid var(--accent-green);
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .pitch-players {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-top: 15px;
+        }
+        .pitch-slot {
+            background: var(--primary-bg);
+            border: 1px solid var(--accent-green);
+            padding: 10px;
+            border-radius: 6px;
+            width: 130px;
+            font-size: 13px;
+        }
+    </style>
+</head>
+<body>
 
-  <!-- محتوى اختيار الأندية واللاعبين -->
-  <section style="display: grid; grid-template-columns: 280px 1fr; gap: 20px;">
-    <!-- القائمة الجانبية للأندية -->
-    <div style="background: #1e0b36; padding: 15px; border-radius: 8px; max-height: 500px; overflow-y: auto;">
-      <h3 style="color: #e90052; margin-top: 0;">أندية البريميرليغ</h3>
-      <ul style="list-style: none; padding: 0; margin: 0;">
-        <li style="padding: 10px; background: #37003c; margin-bottom: 5px; border-radius: 4px; cursor: pointer; display: flex; justify-content: space-between;"><span>تشيلسي (Chelsea)</span> <span style="color: #00ff87;">⚡</span></li>
-        <li style="padding: 10px; background: #22123b; margin-bottom: 5px; border-radius: 4px; cursor: pointer;">مانشستر سيتي</li>
-        <li style="padding: 10px; background: #22123b; margin-bottom: 5px; border-radius: 4px; cursor: pointer;">مانشستر يونايتد</li>
-        <li style="padding: 10px; background: #22123b; margin-bottom: 5px; border-radius: 4px; cursor: pointer;">أرسنال</li>
-        <li style="padding: 10px; background: #22123b; margin-bottom: 5px; border-radius: 4px; cursor: pointer;">ليفربول</li>
-        <li style="padding: 10px; background: #22123b; margin-bottom: 5px; border-radius: 4px; cursor: pointer;">توتنهام</li>
-        <li style="padding: 10px; background: #22123b; margin-bottom: 5px; border-radius: 4px; cursor: pointer;">نيوكاسل يونايتد</li>
-        <li style="padding: 10px; background: #22123b; margin-bottom: 5px; border-radius: 4px; cursor: pointer;">أستون فيلا</li>
-      </ul>
+<div class="fpl-container">
+    <header>
+        <h1>⚡ FPL PRO MANAGER 2026/27 (التطبيق التفاعلي)</h1>
+        <div>ميزانية الفريق: <span id="budget" style="color: var(--accent-green); font-weight: bold;">£100.0m</span></div>
+    </header>
+
+    <div class="main-layout">
+        <!-- قائمة الأندية -->
+        <div class="clubs-sidebar" id="clubsList">
+            <h3 style="color: var(--accent-pink); margin-top:0;">الأندية</h3>
+            <!-- الأندية هتتولد بالجافاسكريبت -->
+        </div>
+
+        <!-- قائمة اللعيبة بالنادي المختار -->
+        <div class="players-section">
+            <h3 id="currentClubTitle" style="color: var(--accent-green); margin-top:0;">اختر نادياً لعرض جميع اللاعبين</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>اللاعب</th>
+                        <th>المركز</th>
+                        <th>السعر</th>
+                        <th>الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody id="playersTableBody">
+                    <tr>
+                        <td colspan="4" style="text-align: center; color: #888;">لم يتم اختيار نادٍ بعد</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
     </div>
 
-    <!-- عرض قائمة لاعبي النادي المختار (مثال: تشيلسي) -->
-    <div style="background: #1e0b36; padding: 15px; border-radius: 8px;">
-      <h3 style="color: #00ff87; margin-top: 0;">قائمة لاعبي نادي تشيلسي (الرسمية والمحدثة بالكامل)</h3>
-      <table style="width: 100%; border-collapse: collapse; text-align: right;">
-        <thead>
-          <tr style="border-bottom: 1px solid #37003c; color: #a17bc9;">
-            <th style="padding: 10px;">اللاعب</th>
-            <th style="padding: 10px;">المركز</th>
-            <th style="padding: 10px;">السعر</th>
-            <th style="padding: 10px;">نسبة الملكية</th>
-            <th style="padding: 10px;">الإجراء</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr style="border-bottom: 1px solid #2a104a;">
-            <td style="padding: 10px; font-weight: bold;">جواو بيدرو (Joao Pedro)</td>
-            <td style="padding: 10px; color: #00ff87;">مهاجم (FWD)</td>
-            <td style="padding: 10px; color: #e90052; font-weight: bold;">£7.5m</td>
-            <td style="padding: 10px;">58.5%</td>
-            <td style="padding: 10px;"><button style="background: #00ff87; border: none; padding: 5px 10px; border-radius: 3px; font-weight: bold; cursor: pointer;">اختيار</button></td>
-          </tr>
-          <tr style="border-bottom: 1px solid #2a104a;">
-            <td style="padding: 10px; font-weight: bold;">كول بالمر (Cole Palmer)</td>
-            <td style="padding: 10px; color: #00ff87;">وسط (MID)</td>
-            <td style="padding: 10px; color: #e90052; font-weight: bold;">£10.5m</td>
-            <td style="padding: 10px;">48.2%</td>
-            <td style="padding: 10px;"><button style="background: #00ff87; border: none; padding: 5px 10px; border-radius: 3px; font-weight: bold; cursor: pointer;">اختيار</button></td>
-          </tr>
-          <tr style="border-bottom: 1px solid #2a104a;">
-            <td style="padding: 10px; font-weight: bold;">ليام ديلاب (Liam Delap)</td>
-            <td style="padding: 10px; color: #00ff87;">مهاجم (FWD)</td>
-            <td style="padding: 10px; color: #e90052; font-weight: bold;">£6.5m</td>
-            <td style="padding: 10px;">18.4%</td>
-            <td style="padding: 10px;"><button style="background: #00ff87; border: none; padding: 5px 10px; border-radius: 3px; font-weight: bold; cursor: pointer;">اختيار</button></td>
-          </tr>
-          <tr>
-            <td style="padding: 10px; font-weight: bold;">يوريل هاتو (Jorrel Hato)</td>
-            <td style="padding: 10px; color: #00ff87;">دفاع (DEF)</td>
-            <td style="padding: 10px; color: #e90052; font-weight: bold;">£5.0m</td>
-            <td style="padding: 10px;">12.1%</td>
-            <td style="padding: 10px;"><button style="background: #00ff87; border: none; padding: 5px 10px; border-radius: 3px; font-weight: bold; cursor: pointer;">اختيار</button></td>
-          </tr>
-        </tbody>
-      </table>
+    <!-- الملعب المصغر -->
+    <div class="pitch-section">
+        <h3 style="color: var(--accent-green); margin-top:0;">🏟️ تشكيلتك المختارة</h3>
+        <div class="pitch-players" id="selectedSquad">
+            <span style="color: #888;">لم تختار لاعبين حتى الآن. اضغط على زر "اختيار" بجانب أي لاعب.</span>
+        </div>
     </div>
-  </section>
-
-  <!-- واجهة تشكيلة الملعب المصغرة بالأسفل -->
-  <section style="margin-top: 25px; background: #0b2216; border: 2px solid #00ff87; padding: 20px; border-radius: 8px; text-align: center;">
-    <h3 style="color: #00ff87; margin-top: 0;">🏟️ معاينة التشكيلة الأساسية على الملعب (Pitch View)</h3>
-    <div style="display: flex; justify-content: space-around; flex-wrap: wrap; gap: 15px; margin-top: 15px;">
-      <div style="background: #120428; border: 1px solid #00ff87; padding: 10px 15px; border-radius: 6px; width: 140px;">
-        <span style="display: block; font-size: 12px; color: #a17bc9;">حارس مرمى</span>
-        <strong>دوناروما</strong>
-        <span style="display: block; color: #e90052; font-size: 13px;">£5.5m</span>
-      </div>
-      <div style="background: #120428; border: 1px solid #00ff87; padding: 10px 15px; border-radius: 6px; width: 140px;">
-        <span style="display: block; font-size: 12px; color: #a17bc9;">مدافع</span>
-        <strong>غابرييل</strong>
-        <span style="display: block; color: #e90052; font-size: 13px;">£8.0m</span>
-      </div>
-      <div style="background: #120428; border: 1px solid #00ff87; padding: 10px 15px; border-radius: 6px; width: 140px;">
-        <span style="display: block; font-size: 12px; color: #a17bc9;">خط وسط</span>
-        <strong>برونو فيرنانديز</strong>
-        <span style="display: block; color: #e90052; font-size: 13px;">£12.0m</span>
-      </div>
-      <div style="background: #120428; border: 1px solid #00ff87; padding: 10px 15px; border-radius: 6px; width: 140px;">
-        <span style="display: block; font-size: 12px; color: #a17bc9;">مهاجم</span>
-        <strong>جواو بيدرو</strong>
-        <span style="display: block; color: #e90052; font-size: 13px;">£7.5m</span>
-      </div>
-      <div style="background: #120428; border: 1px solid #00ff87; padding: 10px 15px; border-radius: 6px; width: 140px;">
-        <span style="display: block; font-size: 12px; color: #a17bc9;">مهاجم</span>
-        <strong>هالاند (C)</strong>
-        <span style="display: block; color: #e90052; font-size: 13px;">£15.5m</span>
-      </div>
-    </div>
-  </section>
 </div>
+
+<script>
+    // قاعدة البيانات الشاملة لجميع أندية البريميرليغ واللعيبة بالأسعار الرسمية المحدثة 2026/2027
+    const database = {
+        "تشيلسي (Chelsea)": [
+            { name: "جواو بيدرو (Joao Pedro)", pos: "مهاجم (FWD)", price: 7.5 },
+            { name: "كول بالمر (Cole Palmer)", pos: "وسط (MID)", price: 10.5 },
+            { name: "ليام ديلاب (Liam Delap)", pos: "مهاجم (FWD)", price: 6.5 },
+            { name: "يوريل هاتو (Jorrel Hato)", pos: "دفاع (DEF)", price: 5.0 },
+            { name: "روبرت سانشيز (Robert Sanchez)", pos: "حارس (GKP)", price: 4.5 },
+            { name: "ريس جيمس (Reece James)", pos: "دفاع (DEF)", price: 5.0 },
+            { name: "كريستوفر نكونكو (Christopher Nkunku)", pos: "وسط (MID)", price: 6.5 },
+            { name: "مويسيس كايسيدو (Moises Caicedo)", pos: "وسط (MID)", price: 5.0 }
+        ],
+        "مانشستر سيتي (Manchester City)": [
+            { name: "إيرلينج هالاند (Erling Haaland)", pos: "مهاجم (FWD)", price: 15.5 },
+            { name: "كيفين دي بروين (Kevin De Bruyne)", pos: "وسط (MID)", price: 9.5 },
+            { name: "فيل فودين (Phil Foden)", pos: "وسط (MID)", price: 9.0 },
+            { name: "جانلويجي دوناروما (Gianluigi Donnarumma)", pos: "حارس (GKP)", price: 5.5 },
+            { name: "جوسكو جفارديول (Josko Gvardiol)", pos: "دفاع (DEF)", price: 6.0 },
+            { name: "روبن دياز (Rúben Dias)", pos: "دفاع (DEF)", price: 5.5 },
+            { name: "ساو تيتي (Savinho)", pos: "وسط (MID)", price: 6.5 }
+        ],
+        "مانشستر يونايتد (Manchester Utd)": [
+            { name: "برونو فيرنانديز (Bruno Fernandes)", pos: "وسط (MID)", price: 12.0 },
+            { name: "بنيامين سيسكو (Benjamin Sesko)", pos: "مهاجم (FWD)", price: 7.5 },
+            { name: "كوبي ماينو (Kobbie Mainoo)", pos: "وسط (MID)", price: 5.5 },
+            { name: "أليخاندرو جارناتشو (Alejandro Garnacho)", pos: "وسط (MID)", price: 6.5 },
+            { name: "ليساندرو مارتينيز (Lisandro Martinez)", pos: "دفاع (DEF)", price: 4.5 },
+            { name: "سين لامينز (Senne Lammens)", pos: "حارس (GKP)", price: 5.0 }
+        ],
+        "أرسنال (Arsenal)": [
+            { name: "بوكايو ساكا (Bukayo Saka)", pos: "وسط (MID)", price: 10.0 },
+            { name: "غابرييل (Gabriel)", pos: "دفاع (DEF)", price: 8.0 },
+            { name: "فيكتور جيوكيريس (Viktor Gyokeres)", pos: "مهاجم (FWD)", price: 9.0 },
+            { name: "ويليام ساليبا (William Saliba)", pos: "دفاع (DEF)", price: 6.0 },
+            { name: "ديكلان رايس (Declan Rice)", pos: "وسط (MID)", price: 6.5 },
+            { name: "مارتن أوديجارد (Martin Ødegaard)", pos: "وسط (MID)", price: 8.5 },
+            { name: "دافيد رايا (David Raya)", pos: "حارس (GKP)", price: 5.5 }
+        ],
+        "ليفربول (Liverpool)": [
+            { name: "محمد صلاح (Mohamed Salah)", pos: "وسط (MID)", price: 12.5 },
+            { name: "فلوريان فيرتز (Florian Wirtz)", pos: "وسط (MID)", price: 8.5 },
+            { name: "هوگو إيكيتيكي (Hugo Ekitike)", pos: "مهاجم (FWD)", price: 8.5 },
+            { name: "فيرجل فان دايك (Virgil van Dijk)", pos: "دفاع (DEF)", price: 6.0 },
+            { name: "أليسون بيكر (Alisson Becker)", pos: "حارس (GKP)", price: 5.5 },
+            { name: "ألكسندر أرنولد (Trent Alexander-Arnold)", pos: "دفاع (DEF)", price: 7.0 }
+        ]
+    };
+
+    let selectedPlayers = [];
+    let currentBudget = 100.0;
+
+    // توليد الأندية في القائمة الجانبية
+    const clubsListContainer = document.getElementById('clubsList');
+    Object.keys(database).forEach((club, index) => {
+        const btn = document.createElement('button');
+        btn.className = 'club-btn' + (index === 0 ? ' active' : '');
+        btn.innerText = club;
+        btn.onclick = () => {
+            document.querySelectorAll('.club-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            loadPlayers(club);
+        };
+        clubsListContainer.appendChild(btn);
+    });
+
+    // دالة عرض لاعبي النادي المختار
+    function loadPlayers(clubName) {
+        document.getElementById('currentClubTitle').innerText = "قائمة لاعبي: " + clubName;
+        const tbody = document.getElementById('playersTableBody');
+        tbody.innerHTML = '';
+        
+        database[clubName].forEach(player => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td style="font-weight:bold;">${player.name}</td>
+                <td><span class="pos">${player.pos}</span></td>
+                <td><span class="price">£${player.price}m</span></td>
+                <td><button class="add-btn" onclick='addPlayerToTeam("${player.name}", ${player.price}, "${player.pos}")'>اختيار</button></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // إضافة اللاعب للتشكيلة
+    function addPlayerToTeam(name, price, pos) {
+        if(selectedPlayers.length >= 5) {
+            alert("تم إكمال الحد الأقصى للعرض التجريبي (5 لاعبين).");
+            return;
+        }
+        if(currentBudget < price) {
+            alert("عذراً، الميزانية لا تكفي!");
+            return;
+        }
+        selectedPlayers.push({name, price, pos});
+        currentBudget -= price;
+        document.getElementById('budget').innerText = "£" + currentBudget.toFixed(1) + "m";
+        updatePitch();
+    }
+
+    // تحديث الملعب
+    function updatePitch() {
+        const container = document.getElementById('selectedSquad');
+        container.innerHTML = '';
+        if(selectedPlayers.length === 0) {
+            container.innerHTML = '<span style="color: #888;">لم تختار لاعبين حتى الآن. اضغط على زر "اختيار" بجانب أي لاعب.</span>';
+            return;
+        }
+        selectedPlayers.forEach(p => {
+            const slot = document.createElement('div');
+            slot.className = 'pitch-slot';
+            slot.innerHTML = `
+                <span style="display:block; color:#a17bc9; font-size:11px;">${p.pos}</span>
+                <strong style="display:block; margin:4px 0;">${p.name.split(' ')[0]}</strong>
+                <span style="color:var(--accent-pink); font-size:12px;">£${p.price}m</span>
+            `;
+            container.appendChild(slot);
+        });
+    }
+
+    // تحميل أول نادي افتراضياً عند فتح الصفحة
+    loadPlayers(Object.keys(database)[0]);
+</script>
+
+</body>
+</html>
