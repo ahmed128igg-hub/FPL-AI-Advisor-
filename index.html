@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>FPL AI Advisor — مرشح الفنتازي الذكي</title>
+<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #050811;
+  --panel: #0d1527;
+  --card: #152238;
+  --border: #1e3a5f;
+  --green: #00ff87;
+  --purple: #38003c;
+  --purple-light: #57005e;
+  --pink: #e90052;
+  --txt: #ffffff;
+  --muted: #8b9bb4;
+}
+* { box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
+body { margin: 0; background: var(--bg); color: var(--txt); padding: 20px; }
+.container { max-width: 1000px; margin: 0 auto; }
+
+/* Header */
+.header { background: linear-gradient(135deg, var(--purple), var(--purple-light)); border-radius: 16px; padding: 25px; text-align: center; border: 1px solid var(--border); box-shadow: 0 10px 30px rgba(56,0,60,0.5); margin-bottom: 25px; }
+.header h1 { margin: 0 0 8px; font-size: 28px; color: var(--green); }
+.header p { margin: 0; color: #d0b3d5; font-size: 14px; }
+
+/* Filter Tabs */
+.tabs { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 20px; }
+.tab-btn { background: var(--panel); border: 1px solid var(--border); color: var(--txt); padding: 10px 18px; border-radius: 10px; cursor: pointer; font-weight: 700; transition: 0.2s; }
+.tab-btn.active, .tab-btn:hover { background: var(--green); color: var(--purple); border-color: var(--green); }
+
+/* Grid & Cards */
+.grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 15px; }
+.player-card { background: var(--card); border: 1px solid var(--border); border-radius: 14px; padding: 16px; position: relative; transition: 0.2s; }
+.player-card:hover { border-color: var(--green); transform: translateY(-3px); }
+.p-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+.p-name { font-size: 18px; font-weight: 900; margin: 0; }
+.p-pos { font-size: 11px; background: var(--purple); color: var(--green); padding: 3px 8px; border-radius: 6px; font-weight: 700; }
+
+.p-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; text-align: center; background: rgba(0,0,0,0.2); padding: 10px; border-radius: 8px; margin-bottom: 12px; }
+.p-stat small { display: block; color: var(--muted); font-size: 11px; }
+.p-stat strong { font-size: 15px; color: #fff; }
+
+.ai-score { background: linear-gradient(90deg, rgba(0,255,135,0.1), rgba(233,0,82,0.1)); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; display: flex; justify-content: space-between; align-items: center; }
+.ai-score span { font-size: 12px; color: var(--muted); }
+.ai-score strong { color: var(--green); font-size: 16px; }
+
+/* Notice */
+.ai-badge { background: var(--pink); color: #fff; font-size: 10px; font-weight: 900; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <div class="header">
+    <h1>⚽ FPL AI Advisor</h1>
+    <p>مساعدك الذكي لتحليل أرقام لاعيبة الفنتازي واختيار التشكيلة المثالية</p>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="filterCategory('all', this)">🏆 جميع الترشيحات</button>
+    <button class="tab-btn" onclick="filterCategory('captain', this)">👑 خيارات الكابتن</button>
+    <button class="tab-btn" onclick="filterCategory('diff', this)">🎯 الديفرنس المضمون (&lt;10%)</button>
+    <button class="tab-btn" onclick="filterCategory('form', this)">🔥 الأعلى فورمة</button>
+  </div>
+
+  <div class="grid" id="playersGrid"></div>
+</div>
+
+<script>
+// قاعدة بيانات ذكية أولية محاكاة لأرقام الفنتازي الرسمية
+const playersData = [
+  { name: "Haaland", team: "MCI", pos: "FWD", price: "15.0m", form: "8.5", selected: "65.2%", xP: "9.2", isCaptain: true, isDiff: false },
+  { name: "Salah", team: "LIV", pos: "MID", price: "12.5m", form: "7.8", selected: "48.1%", xP: "8.7", isCaptain: true, isDiff: false },
+  { name: "Saka", team: "ARS", pos: "MID", price: "10.0m", form: "7.2", selected: "32.4%", xP: "7.9", isCaptain: true, isDiff: false },
+  { name: "Trossard", team: "ARS", pos: "MID", price: "7.0m", form: "6.8", selected: "3.5%", xP: "6.9", isCaptain: false, isDiff: true },
+  { name: "Isak", team: "NEW", pos: "FWD", price: "8.5m", form: "6.9", selected: "22.1%", xP: "7.1", isCaptain: false, isDiff: false },
+  { name: "João Pedro", team: "BHA", pos: "FWD", price: "5.5m", form: "6.1", selected: "8.4%", xP: "6.3", isCaptain: false, isDiff: true },
+  { name: "Calafiori", team: "ARS", pos: "DEF", price: "5.8m", form: "5.9", selected: "4.2%", xP: "5.8", isCaptain: false, isDiff: true },
+  { name: "Gvardiol", team: "MCI", pos: "DEF", price: "6.0m", form: "6.4", selected: "28.0%", xP: "6.1", isCaptain: false, isDiff: false }
+];
+
+function renderPlayers(filter = 'all') {
+  const container = document.getElementById('playersGrid');
+  let list = playersData;
+
+  if (filter === 'captain') list = playersData.filter(p => p.isCaptain);
+  if (filter === 'diff') list = playersData.filter(p => p.isDiff);
+  if (filter === 'form') list = [...playersData].sort((a, b) => b.form - a.form);
+
+  container.innerHTML = list.map(p => `
+    <div class="player-card">
+      <div class="p-header">
+        <div>
+          <h3 class="p-name">${p.name} <small style="font-size:12px; color:var(--muted)">(${p.team})</small></h3>
+        </div>
+        <span class="p-pos">${p.pos}</span>
+      </div>
+
+      <div class="p-stats">
+        <div class="p-stat"><small>السعر</small><strong>${p.price}</strong></div>
+        <div class="p-stat"><small>الفورمة</small><strong>${p.form}</strong></div>
+        <div class="p-stat"><small>الملكية</small><strong>${p.selected}</strong></div>
+      </div>
+
+      <div class="ai-score">
+        <div>
+          <span>النقاط المتوقعة (xP)</span>
+          ${p.isDiff ? '<span class="ai-badge">Differential</span>' : ''}
+          ${p.isCaptain ? '<span class="ai-badge" style="background:var(--green); color:#000">Captain Pick</span>' : ''}
+        </div>
+        <strong>${p.xP} pts</strong>
+      </div>
+    </div>
+  `).join('');
+}
+
+function filterCategory(cat, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderPlayers(cat);
+}
+
+renderPlayers();
+</script>
+</body>
+</html>
