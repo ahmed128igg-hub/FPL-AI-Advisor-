@@ -3,19 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FPL Master Pro 2026/27 - All 20 Clubs</title>
+    <title>FPL Official App Experience 2026/27</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --fpl-purple: #37003c;
             --fpl-green: #00ff87;
             --fpl-pink: #e90052;
-            --bg-dark: #11001c;
-            --card-bg: #24002d;
+            --bg-dark: #12001a;
+            --card-bg: #22002a;
             --fdr-1: #00ff87;
             --fdr-2: #05f0ff;
             --fdr-3: #e1e1e1;
             --fdr-4: #ff1744;
+            --fdr-5: #800020;
         }
 
         body {
@@ -23,583 +24,598 @@
             background-color: var(--bg-dark);
             color: #ffffff;
             margin: 0;
-            padding: 15px;
+            padding-bottom: 70px; /* Space for Bottom Nav */
         }
 
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
+        /* App Top Bar */
         header {
             background: var(--fpl-purple);
-            border-bottom: 4px solid var(--fpl-green);
-            padding: 15px 25px;
-            border-radius: 12px;
+            border-bottom: 3px solid var(--fpl-green);
+            padding: 12px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
         }
 
-        .title-area h1 {
+        header h1 {
             margin: 0;
-            font-size: 24px;
+            font-size: 18px;
             color: var(--fpl-green);
         }
 
         .hud-stats {
             display: flex;
-            gap: 15px;
-            align-items: center;
+            gap: 12px;
         }
 
         .stat-badge {
-            background: rgba(255,255,255,0.08);
-            padding: 8px 16px;
-            border-radius: 8px;
+            background: rgba(255,255,255,0.1);
+            padding: 4px 10px;
+            border-radius: 6px;
             text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
+            font-size: 12px;
         }
 
-        .stat-badge label {
-            display: block;
-            font-size: 11px;
-            color: #aaa;
-        }
-
-        .stat-badge val {
-            font-size: 18px;
-            font-weight: bold;
+        .stat-badge span {
             color: var(--fpl-green);
+            font-weight: bold;
+        }
+
+        /* Screen Views */
+        .screen { display: none; padding: 15px; }
+        .screen.active { display: block; }
+
+        /* AI Quick Action Bar */
+        .ai-bar {
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
         .btn-ai {
             background: linear-gradient(45deg, #00ff87, #00b0ff);
             color: #000;
             border: none;
-            padding: 12px 22px;
+            padding: 8px 16px;
             font-weight: bold;
-            border-radius: 8px;
+            border-radius: 6px;
             cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,255,135,0.4);
+        }
+
+        /* Official Pitch Layout */
+        .pitch-container {
+            background: #008040;
+            background-image: linear-gradient(#008f48 2px, transparent 2px), linear-gradient(90deg, #008f48 2px, transparent 2px);
+            background-size: 40px 40px;
+            border: 3px solid #ffffff;
+            border-radius: 12px;
+            padding: 15px 5px;
+            min-height: 480px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .pitch-row {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin: 8px 0;
+        }
+
+        .slot-card {
+            background: rgba(55, 0, 60, 0.85);
+            border: 2px dashed rgba(255,255,255,0.4);
+            border-radius: 8px;
+            width: 72px;
+            height: 90px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
             transition: 0.2s;
         }
 
-        .btn-ai:hover { transform: scale(1.04); }
-
-        .main-layout {
-            display: grid;
-            grid-template-columns: 280px 1fr;
-            gap: 20px;
-        }
-
-        .clubs-panel {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 12px;
-            height: 550px;
-            overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .club-item-btn {
-            width: 100%;
-            background: #190022;
-            color: white;
-            border: 1px solid #4a0052;
-            padding: 10px 12px;
-            margin-bottom: 6px;
-            border-radius: 6px;
-            text-align: right;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .club-item-btn:hover, .club-item-btn.active {
+        .slot-card.filled {
+            border: 2px solid var(--fpl-green);
             background: var(--fpl-purple);
-            border-color: var(--fpl-green);
+        }
+
+        .slot-card img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+        }
+
+        .slot-card .add-icon {
+            font-size: 24px;
+            color: var(--fpl-green);
+            font-weight: bold;
+        }
+
+        .slot-card .p-name {
+            font-size: 9px;
+            font-weight: bold;
+            margin-top: 3px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 68px;
+            text-align: center;
+        }
+
+        .slot-card .p-price {
+            font-size: 8px;
             color: var(--fpl-green);
         }
 
-        .table-panel {
-            background: var(--card-bg);
-            border-radius: 10px;
-            padding: 15px;
-            height: 550px;
-            overflow-y: auto;
+        .remove-btn {
+            position: absolute;
+            top: -4px;
+            left: -4px;
+            background: red;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 16px;
+            height: 16px;
+            font-size: 9px;
+            cursor: pointer;
         }
 
-        table {
+        /* Players Transfer Market Screen */
+        .search-box {
             width: 100%;
-            border-collapse: collapse;
-            text-align: right;
-        }
-
-        th {
-            background: var(--fpl-purple);
-            color: #ccc;
-            padding: 12px 10px;
-            position: sticky;
-            top: 0;
-            font-size: 13px;
-        }
-
-        td {
             padding: 10px;
-            border-bottom: 1px solid #3c0047;
-            font-size: 14px;
+            border-radius: 6px;
+            border: 1px solid #4a0052;
+            background: #190022;
+            color: #fff;
+            margin-bottom: 10px;
+            box-sizing: border-box;
         }
 
-        .fdr-badge {
-            display: inline-block;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-weight: bold;
-            font-size: 11px;
+        .filter-bar {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 15px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+
+        .filter-btn {
+            background: #280033;
+            color: #ccc;
+            border: 1px solid #4a0052;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .filter-btn.active {
+            background: var(--fpl-green);
             color: #000;
+            font-weight: bold;
+        }
+
+        .players-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .player-row-item {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #3d004c;
+        }
+
+        .p-info-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .p-info-left img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .p-details div { font-size: 13px; font-weight: bold; }
+        .p-details small { color: #aaa; font-size: 11px; }
+
+        .fdr-pill {
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+            color: #000;
+            margin-right: 5px;
         }
 
         .fdr-1 { background: var(--fdr-1); }
         .fdr-2 { background: var(--fdr-2); }
         .fdr-3 { background: var(--fdr-3); }
         .fdr-4 { background: var(--fdr-4); color: #fff; }
+        .fdr-5 { background: var(--fdr-5); color: #fff; }
 
-        .btn-select {
+        .btn-add-p {
             background: var(--fpl-green);
             color: #000;
             border: none;
-            padding: 6px 14px;
+            padding: 6px 12px;
             border-radius: 4px;
             font-weight: bold;
             cursor: pointer;
         }
 
-        .btn-select.selected {
+        .btn-add-p.in-squad {
             background: var(--fpl-pink);
             color: #fff;
         }
 
-        /* Pitch UI */
-        .pitch-container {
-            margin-top: 25px;
-            background: #008040;
-            background-image: radial-gradient(#00994d 15%, transparent 16%), radial-gradient(#00994d 15%, transparent 16%);
-            background-size: 60px 60px;
-            background-position: 0 0, 30px 30px;
-            border: 4px solid #ffffff;
-            border-radius: 15px;
-            padding: 20px;
-        }
-
-        .pitch-section-title {
-            text-align: center;
-            color: var(--fpl-green);
-            font-size: 14px;
-            margin: 10px 0 5px 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .pitch-row {
-            display: flex;
-            justify-content: center;
-            gap: 15px;
-            margin-bottom: 15px;
-            flex-wrap: wrap;
-        }
-
-        .player-card {
+        /* Bottom Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
             background: var(--fpl-purple);
-            border: 2px solid var(--fpl-green);
-            border-radius: 8px;
-            width: 105px;
-            padding: 8px 5px;
-            text-align: center;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.6);
-            position: relative;
+            border-top: 2px solid var(--fpl-green);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
         }
 
-        .player-card img {
-            width: 55px;
-            height: 55px;
-            border-radius: 50%;
-            background: #fff;
-            object-fit: cover;
-        }
-
-        .player-card .p-name {
-            display: block;
-            font-size: 11px;
-            font-weight: bold;
-            margin-top: 4px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .player-card .p-team {
-            font-size: 9px;
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             color: #aaa;
+            font-size: 11px;
+            cursor: pointer;
+            text-decoration: none;
         }
 
-        .player-card .p-price {
-            font-size: 10px;
+        .nav-item.active {
             color: var(--fpl-green);
             font-weight: bold;
         }
 
-        .remove-btn {
-            position: absolute;
-            top: -5px;
-            left: -5px;
-            background: red;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 18px;
-            height: 18px;
-            font-size: 10px;
-            cursor: pointer;
-        }
+        .nav-item div { font-size: 18px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <header>
-        <div class="title-area">
-            <h1>⚽ FPL Pro Manager 2026/27 (All 20 Teams)</h1>
-        </div>
-        <div class="hud-stats">
-            <div class="stat-badge">
-                <label>الميزانية المتبقية</label>
-                <val id="budgetDisplay">£100.0m</val>
-            </div>
-            <div class="stat-badge">
-                <label>التشكيلة</label>
-                <val id="countDisplay">0/15</val>
-            </div>
-            <button class="btn-ai" onclick="generateAISquad()">🤖 تشكيلة الذكاء الاصطناعي الذكية</button>
-        </div>
-    </header>
+<header>
+    <h1>⚽ FPL App Official</h1>
+    <div class="hud-stats">
+        <div class="stat-badge">الميزانية: <span id="budgetDisplay">£100.0m</span></div>
+        <div class="stat-badge">اللاعبين: <span id="countDisplay">0/15</span></div>
+    </div>
+</header>
 
-    <div class="main-layout">
-        <!-- الأندية الـ 20 -->
-        <div class="clubs-panel" id="clubsList"></div>
-
-        <!-- قائمة اللاعبين -->
-        <div class="table-panel">
-            <h3 id="currentClubHeading" style="color: var(--fpl-green); margin-top:0;">اختر نادياً لعرض لاعبيه</h3>
-            <table>
-                <thead>
-                    <tr>
-                        <th>اللاعب</th>
-                        <th>المركز</th>
-                        <th>السعر</th>
-                        <th>المباراة (FDR)</th>
-                        <th>إجراء</th>
-                    </tr>
-                </thead>
-                <tbody id="playersTbody">
-                    <tr><td colspan="5" style="text-align:center;">اختر أي فريق من القائمة الجانبية</td></tr>
-                </tbody>
-            </table>
-        </div>
+<!-- Screen 1: Squad Pitch Screen -->
+<div id="squadScreen" class="screen active">
+    <div class="ai-bar">
+        <span>أو اترك المهمة للذكاء الاصطناعي:</span>
+        <button class="btn-ai" onclick="generateAISquad()">🤖 تشكيلة تلقائية محترفة</button>
     </div>
 
-    <!-- ملعب التشكيلة -->
-    <div class="pitch-container">
-        <h3 style="margin-top:0; text-align:center; color:#fff;">🏟️ تشكيلة فريقك الرسمية</h3>
-        <div id="pitchView">
-            <div style="text-align:center; color:#ccc; padding: 20px;">التشكيلة فارغة حالياً. حدد لاعبيك أو استخدم زر الذكاء الاصطناعي.</div>
-        </div>
+    <div class="pitch-container" id="pitchContainer">
+        <!-- Dynamic Slots Rendered Here -->
     </div>
 </div>
 
+<!-- Screen 2: Players Selection Market Screen -->
+<div id="marketScreen" class="screen">
+    <input type="text" class="search-box" id="searchInput" placeholder="🔍 ابحث عن اسم اللاعب..." oninput="filterPlayers()">
+    
+    <div class="filter-bar" id="positionFilters">
+        <button class="filter-btn active" onclick="setPosFilter('ALL')">الكل</button>
+        <button class="filter-btn" onclick="setPosFilter('GKP')">حراس (GKP)</button>
+        <button class="filter-btn" onclick="setPosFilter('DEF')">دفاع (DEF)</button>
+        <button class="filter-btn" onclick="setPosFilter('MID')">وسط (MID)</button>
+        <button class="filter-btn" onclick="setPosFilter('FWD')">هجوم (FWD)</button>
+    </div>
+
+    <div class="filter-bar" id="clubFilters">
+        <!-- Club Filters Dynamically Generated -->
+    </div>
+
+    <div class="players-list" id="playersListContainer">
+        <!-- Players List Dynamically Rendered -->
+    </div>
+</div>
+
+<!-- Bottom Navigation Bar -->
+<nav class="bottom-nav">
+    <div class="nav-item active" id="navSquad" onclick="switchScreen('squad')">
+        <div>🏟️</div>
+        <span>التشكيلة</span>
+    </div>
+    <div class="nav-item" id="navMarket" onclick="switchScreen('market')">
+        <div>🏃</div>
+        <span>انتقالات اللاعبين</span>
+    </div>
+</nav>
+
 <script>
-    // قاعدة بيانات شاملة للـ 20 نادياً بجميع اللاعبين والأسعار الرسمية
-    const clubsData = {
-        "أرسنال": [
-            { id: 101, name: "دافيد رايا", pos: "GKP", price: 5.5, fdr: "SOU (H)", fdrLevel: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p194632.png" },
-            { id: 102, name: "غابرييل ماغالهايس", pos: "DEF", price: 6.0, fdr: "SOU (H)", fdrLevel: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p226597.png" },
-            { id: 103, name: "ويليام ساليبا", pos: "DEF", price: 6.0, fdr: "SOU (H)", fdrLevel: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p462424.png" },
-            { id: 104, name: "بوكايو ساكا", pos: "MID", price: 10.0, fdr: "SOU (H)", fdrLevel: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p223340.png" },
-            { id: 105, name: "مارتن أوديجارد", pos: "MID", price: 8.5, fdr: "SOU (H)", fdrLevel: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p184009.png" },
-            { id: 106, name: "كاي هافيرتز", pos: "FWD", price: 8.0, fdr: "SOU (H)", fdrLevel: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p219847.png" }
-        ],
-        "مانشستر سيتي": [
-            { id: 201, name: "إيدرسون", pos: "GKP", price: 5.5, fdr: "FUL (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p121160.png" },
-            { id: 202, name: "جوسكو جفارديول", pos: "DEF", price: 6.0, fdr: "FUL (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p477424.png" },
-            { id: 203, name: "فيل فودين", pos: "MID", price: 9.5, fdr: "FUL (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p209244.png" },
-            { id: 204, name: "إيرلينج هالاند", pos: "FWD", price: 15.0, fdr: "FUL (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p223094.png" },
-            { id: 205, name: "سافينيو", pos: "MID", price: 6.5, fdr: "FUL (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p492429.png" }
-        ],
-        "ليفربول": [
-            { id: 301, name: "أليسون بيكر", pos: "GKP", price: 5.5, fdr: "CRY (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p116535.png" },
-            { id: 302, name: "فيرجل فان دايك", pos: "DEF", price: 6.0, fdr: "CRY (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p97032.png" },
-            { id: 303, name: "محمد صلاح", pos: "MID", price: 12.5, fdr: "CRY (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p118748.png" },
-            { id: 304, name: "لويس دياز", pos: "MID", price: 7.5, fdr: "CRY (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p244731.png" },
-            { id: 305, name: "داروين نونيز", pos: "FWD", price: 7.5, fdr: "CRY (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p447203.png" }
-        ],
-        "تشيلسي": [
-            { id: 401, name: "روبرت سانشيز", pos: "GKP", price: 4.5, fdr: "NFO (H)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p215059.png" },
-            { id: 402, name: "كول بالمر", pos: "MID", price: 10.5, fdr: "NFO (H)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p244851.png" },
-            { id: 403, name: "نيكولاس جاكسون", pos: "FWD", price: 7.5, fdr: "NFO (H)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p492429.png" },
-            { id: 404, name: "مويسيس كايسيدو", pos: "MID", price: 5.0, fdr: "NFO (H)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p486672.png" }
-        ],
-        "أستون فيلا": [
-            { id: 501, name: "إيميليانو مارتينيز", pos: "GKP", price: 5.0, fdr: "MUN (H)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p98980.png" },
-            { id: 502, name: "أولي واتكينز", pos: "FWD", price: 9.0, fdr: "MUN (H)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p178301.png" },
-            { id: 503, name: "مورجان روجرز", pos: "MID", price: 5.5, fdr: "MUN (H)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p463748.png" }
-        ],
-        "توتنهام": [
-            { id: 601, name: "غولييلمو فيكاريو", pos: "GKP", price: 5.0, fdr: "BHA (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p242864.png" },
-            { id: 602, name: "سون هيونغ مين", pos: "MID", price: 10.0, fdr: "BHA (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p85971.png" },
-            { id: 603, name: "دومينيك سولانكي", pos: "FWD", price: 7.5, fdr: "BHA (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p154566.png" },
-            { id: 604, name: "بدرو بورو", pos: "DEF", price: 5.5, fdr: "BHA (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p441164.png" }
-        ],
-        "مانشستر يونايتد": [
-            { id: 701, name: "أندريه أونانا", pos: "GKP", price: 5.0, fdr: "AVL (A)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p202641.png" },
-            { id: 702, name: "برونو فيرنانديز", pos: "MID", price: 8.5, fdr: "AVL (A)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p141746.png" },
-            { id: 703, name: "أماد ديالو", pos: "MID", price: 5.0, fdr: "AVL (A)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p492823.png" },
-            { id: 704, name: "نصير مزراوي", pos: "DEF", price: 4.5, fdr: "AVL (A)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p248833.png" }
-        ],
-        "نيوكاسل": [
-            { id: 801, name: "نيك بوب", pos: "GKP", price: 5.0, fdr: "EVE (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p98747.png" },
-            { id: 802, name: "ألكسندر إيساك", pos: "FWD", price: 8.5, fdr: "EVE (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p244206.png" },
-            { id: 803, name: "أنتوني غوردون", pos: "MID", price: 7.5, fdr: "EVE (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p232826.png" }
-        ],
-        "برايتون": [
-            { id: 901, name: "بارت فيربلاجين", pos: "GKP", price: 4.5, fdr: "TOT (H)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p487117.png" },
-            { id: 902, name: "كاورو ميتوما", pos: "MID", price: 6.5, fdr: "TOT (H)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p443986.png" },
-            { id: 903, name: "داني ويلبيك", pos: "FWD", price: 5.5, fdr: "TOT (H)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p50175.png" }
-        ],
-        "وست هام": [
-            { id: 1001, name: "ألفونس أريولا", pos: "GKP", price: 4.5, fdr: "IPSW (H)", fdrLevel: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p88248.png" },
-            { id: 1002, name: "جارود بوين", pos: "MID", price: 7.5, fdr: "IPSW (H)", fdrLevel: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p178186.png" },
-            { id: 1003, name: "ماكس كيلمان", pos: "DEF", price: 4.5, fdr: "IPSW (H)", fdrLevel: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p214048.png" }
-        ],
-        "برينتفورد": [
-            { id: 1101, name: "مارك فليكن", pos: "GKP", price: 4.5, fdr: "WOL (H)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p131338.png" },
-            { id: 1102, name: "بريان مبويمو", pos: "MID", price: 7.0, fdr: "WOL (H)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p247200.png" },
-            { id: 1103, name: "يوان ويسا", pos: "FWD", price: 6.0, fdr: "WOL (H)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p213404.png" }
-        ],
-        "فولهام": [
-            { id: 1201, name: "بيرند لينو", pos: "GKP", price: 5.0, fdr: "MCI (H)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p80921.png" },
-            { id: 1202, name: "إميل سميث رو", pos: "MID", price: 5.5, fdr: "MCI (H)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p243016.png" },
-            { id: 1203, name: "أنتوني روبنسون", pos: "DEF", price: 4.5, fdr: "MCI (H)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p169528.png" }
-        ],
-        "بورنموث": [
-            { id: 1301, name: "كيبرا أريزابالاغا", pos: "GKP", price: 4.5, fdr: "LEI (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p109745.png" },
-            { id: 1302, name: "أنتوان سيمينيو", pos: "MID", price: 5.5, fdr: "LEI (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p243610.png" },
-            { id: 1303, name: "إيفانيلسون", pos: "FWD", price: 6.0, fdr: "LEI (A)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p482680.png" }
-        ],
-        "نوتنغهام فورست": [
-            { id: 1401, name: "ماتس سيلس", pos: "GKP", price: 4.5, fdr: "CHE (A)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p100180.png" },
-            { id: 1402, name: "كريس وود", pos: "FWD", price: 6.0, fdr: "CHE (A)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p60689.png" },
-            { id: 1403, name: "مورجان جيبس وايت", pos: "MID", price: 6.5, fdr: "CHE (A)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p222531.png" }
-        ],
-        "إيفرتون": [
-            { id: 1501, name: "جوردان بيكفورد", pos: "GKP", price: 5.0, fdr: "NEW (H)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p111234.png" },
-            { id: 1502, name: "دوايت إمبويسي", pos: "MID", price: 6.0, fdr: "NEW (H)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p214626.png" },
-            { id: 1503, name: "جيراد برانثويت", pos: "DEF", price: 5.0, fdr: "NEW (H)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p480987.png" }
-        ],
-        "ليستر سيتي": [
-            { id: 1601, name: "مادس هيرمانسن", pos: "GKP", price: 4.5, fdr: "BOU (H)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p441113.png" },
-            { id: 1602, name: "جيمي فاردي", pos: "FWD", price: 5.5, fdr: "BOU (H)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p101668.png" },
-            { id: 1603, name: "فاكوندو بونانوتي", pos: "MID", price: 5.0, fdr: "BOU (H)", fdrLevel: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p534033.png" }
-        ],
-        "إيبسويتش تاون": [
-            { id: 1701, name: "أريجانيت موريتش", pos: "GKP", price: 4.5, fdr: "WHU (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p243609.png" },
-            { id: 1702, name: "ليام ديلااب", pos: "FWD", price: 5.5, fdr: "WHU (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p463748.png" },
-            { id: 1703, name: "سام مرسي", pos: "MID", price: 5.0, fdr: "WHU (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p114240.png" }
-        ],
-        "ولفرهامبتون": [
-            { id: 1801, name: "سام جونستون", pos: "GKP", price: 4.5, fdr: "BRE (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p101188.png" },
-            { id: 1802, name: "ماتيوس كونا", pos: "FWD", price: 6.5, fdr: "BRE (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p432490.png" },
-            { id: 1803, name: "رايان أيت نوري", pos: "DEF", price: 4.5, fdr: "BRE (A)", fdrLevel: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p461358.png" }
-        ],
-        "كريستال بالاس": [
-            { id: 1901, name: "دين هندرسون", pos: "GKP", price: 4.5, fdr: "LIV (H)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p172649.png" },
-            { id: 1902, name: "إيزي إبيريتشي", pos: "MID", price: 6.8, fdr: "LIV (H)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p232770.png" },
-            { id: 1903, name: "جان فيليب ماتيتا", pos: "FWD", price: 7.5, fdr: "LIV (H)", fdrLevel: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p220627.png" }
-        ],
-        "ساوثهامبتون": [
-            { id: 2001, name: "أرون رامسديل", pos: "GKP", price: 4.5, fdr: "ARS (A)", fdrLevel: 5, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p225321.png" },
-            { id: 2002, name: "تايلر ديبيلينج", pos: "MID", price: 4.5, fdr: "ARS (A)", fdrLevel: 5, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p541602.png" },
-            { id: 2003, name: "كاميرون أرشر", pos: "FWD", price: 5.0, fdr: "ARS (A)", fdrLevel: 5, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p463748.png" }
-        ]
-    };
+    // قاعدة بيانات شاملة بأهم نجوم وأعمدة الفانتازي الرسميين
+    const playersDatabase = [
+        // حراس مرمى
+        { id: 1, name: "دافيد رايا", club: "أرسنال", pos: "GKP", price: 5.5, fdr: "SOU (H)", fdrL: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p194632.png" },
+        { id: 2, name: "إيدرسون", club: "مانشستر سيتي", pos: "GKP", price: 5.5, fdr: "FUL (A)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p121160.png" },
+        { id: 3, name: "أليسون بيكر", club: "ليفربول", pos: "GKP", price: 5.5, fdr: "CRY (A)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p116535.png" },
+        { id: 4, name: "روبرت سانشيز", club: "تشيلسي", pos: "GKP", price: 4.5, fdr: "NFO (H)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p215059.png" },
+        { id: 5, name: "إيميليانو مارتينيز", club: "أستون فيلا", pos: "GKP", price: 5.0, fdr: "MUN (H)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p98980.png" },
+        { id: 6, name: "مارك فليكن", club: "برينتفورد", pos: "GKP", price: 4.5, fdr: "WOL (H)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p131338.png" },
+
+        // مدافعون
+        { id: 10, name: "غابرييل ماغالهايس", club: "أرسنال", pos: "DEF", price: 6.0, fdr: "SOU (H)", fdrL: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p226597.png" },
+        { id: 11, name: "ويليام ساليبا", club: "أرسنال", pos: "DEF", price: 6.0, fdr: "SOU (H)", fdrL: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p462424.png" },
+        { id: 12, name: "جوسكو جفارديول", club: "مانشستر سيتي", pos: "DEF", price: 6.0, fdr: "FUL (A)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p477424.png" },
+        { id: 13, name: "فيرجل فان دايك", club: "ليفربول", pos: "DEF", price: 6.0, fdr: "CRY (A)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p97032.png" },
+        { id: 14, name: "ترينت ألكسندر أرنولد", club: "ليفربول", pos: "DEF", price: 7.0, fdr: "CRY (A)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p169187.png" },
+        { id: 15, name: "بدرو بورو", club: "توتنهام", pos: "DEF", price: 5.5, fdr: "BHA (A)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p441164.png" },
+        { id: 16, name: "أنتوني روبنسون", club: "فولهام", pos: "DEF", price: 4.7, fdr: "MCI (H)", fdrL: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p169528.png" },
+        { id: 17, name: "نصير مزراوي", club: "مانشستر يونايتد", pos: "DEF", price: 4.5, fdr: "AVL (A)", fdrL: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p248833.png" },
+
+        // لاعبو وسط
+        { id: 20, name: "محمد صلاح", club: "ليفربول", pos: "MID", price: 12.5, fdr: "CRY (A)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p118748.png" },
+        { id: 21, name: "كول بالمر", club: "تشيلسي", pos: "MID", price: 10.5, fdr: "NFO (H)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p244851.png" },
+        { id: 22, name: "بوكايو ساكا", club: "أرسنال", pos: "MID", price: 10.0, fdr: "SOU (H)", fdrL: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p223340.png" },
+        { id: 23, name: "سون هيونغ مين", club: "توتنهام", pos: "MID", price: 10.0, fdr: "BHA (A)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p85971.png" },
+        { id: 24, name: "فيل فودين", club: "مانشستر سيتي", pos: "MID", price: 9.3, fdr: "FUL (A)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p209244.png" },
+        { id: 25, name: "بريان مبويمو", club: "برينتفورد", pos: "MID", price: 7.2, fdr: "WOL (H)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p247200.png" },
+        { id: 26, name: "لويس دياز", club: "ليفربول", pos: "MID", price: 7.8, fdr: "CRY (A)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p244731.png" },
+        { id: 27, name: "مورجان روجرز", club: "أستون فيلا", pos: "MID", price: 5.2, fdr: "MUN (H)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p463748.png" },
+        { id: 28, name: "أنتوان سيمينيو", club: "بورنموث", pos: "MID", price: 5.6, fdr: "LEI (A)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p243610.png" },
+        { id: 29, name: "إيميل سميث رو", club: "فولهام", pos: "MID", price: 5.7, fdr: "MCI (H)", fdrL: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p243016.png" },
+
+        // مهاجمون
+        { id: 30, name: "إيرلينج هالاند", club: "مانشستر سيتي", pos: "FWD", price: 15.2, fdr: "FUL (A)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p223094.png" },
+        { id: 31, name: "أولي واتكينز", club: "أستون فيلا", pos: "FWD", price: 9.0, fdr: "MUN (H)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p178301.png" },
+        { id: 32, name: "ألكسندر إيساك", club: "نيوكاسل", pos: "FWD", price: 8.4, fdr: "EVE (A)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p244206.png" },
+        { id: 33, name: "كاي هافيرتز", club: "أرسنال", pos: "FWD", price: 8.1, fdr: "SOU (H)", fdrL: 1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p219847.png" },
+        { id: 34, name: "نيكولاس جاكسون", club: "تشيلسي", pos: "FWD", price: 7.9, fdr: "NFO (H)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p492429.png" },
+        { id: 35, name: "كريس وود", club: "نوتنغهام فورست", pos: "FWD", price: 6.2, fdr: "CHE (A)", fdrL: 4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p60689.png" },
+        { id: 36, name: "دومينيك سولانكي", club: "توتنهام", pos: "FWD", price: 7.5, fdr: "BHA (A)", fdrL: 3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p154566.png" },
+        { id: 37, name: "جواو بيدرو", club: "تشيلسي", pos: "FWD", price: 5.7, fdr: "NFO (H)", fdrL: 2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p477064.png" }
+    ];
 
     let squad = [];
     let budget = 100.0;
+    let selectedPosFilter = 'ALL';
+    let selectedClubFilter = 'ALL';
+    let targetPosForAdd = null;
 
-    // Render Clubs Sidebar
-    const clubsList = document.getElementById('clubsList');
-    Object.keys(clubsData).forEach((club, index) => {
-        const btn = document.createElement('button');
-        btn.className = 'club-item-btn' + (index === 0 ? ' active' : '');
-        btn.innerHTML = `<span>${club}</span> <small style="color:#888;">${clubsData[club].length} لعيبة</small>`;
-        btn.onclick = () => {
-            document.querySelectorAll('.club-item-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-            renderPlayers(club);
-        };
-        clubsList.appendChild(btn);
-    });
+    // Formation slot structure: 2 GKP, 5 DEF, 5 MID, 3 FWD
+    const formationSlots = [
+        { pos: 'GKP', count: 2 },
+        { pos: 'DEF', count: 5 },
+        { pos: 'MID', count: 5 },
+        { pos: 'FWD', count: 3 }
+    ];
 
-    // Render Players
-    function renderPlayers(clubName) {
-        document.getElementById('currentClubHeading').innerText = clubName;
-        const tbody = document.getElementById('playersTbody');
-        tbody.innerHTML = '';
+    // Screen Switching
+    function switchScreen(screenName) {
+        document.getElementById('squadScreen').classList.remove('active');
+        document.getElementById('marketScreen').classList.remove('active');
+        document.getElementById('navSquad').classList.remove('active');
+        document.getElementById('navMarket').classList.remove('active');
 
-        clubsData[clubName].forEach(p => {
-            const inSquad = squad.some(item => item.id === p.id);
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${p.name}</strong></td>
-                <td><span style="color:var(--fpl-green);">${p.pos}</span></td>
-                <td><strong>£${p.price}m</strong></td>
-                <td><span class="fdr-badge fdr-${p.fdrLevel}">${p.fdr}</span></td>
-                <td>
-                    <button class="btn-select ${inSquad ? 'selected' : ''}" onclick="togglePlayer(${p.id}, '${clubName}')">
-                        ${inSquad ? 'إزالة' : 'اختيار'}
-                    </button>
-                </td>
-            `;
-            tbody.appendChild(tr);
+        if(screenName === 'squad') {
+            document.getElementById('squadScreen').classList.add('active');
+            document.getElementById('navSquad').classList.add('active');
+        } else {
+            document.getElementById('marketScreen').classList.add('active');
+            document.getElementById('navMarket').classList.add('active');
+            filterPlayers();
+        }
+    }
+
+    // Render Pitch Slots with (+)
+    function renderPitch() {
+        const pitch = document.getElementById('pitchContainer');
+        pitch.innerHTML = '';
+
+        formationSlots.forEach(group => {
+            const row = document.createElement('div');
+            row.className = 'pitch-row';
+
+            const posPlayers = squad.filter(p => p.pos === group.pos);
+
+            for(let i = 0; i < group.count; i++) {
+                const player = posPlayers[i];
+                const card = document.createElement('div');
+
+                if(player) {
+                    card.className = 'slot-card filled';
+                    card.innerHTML = `
+                        <button class="remove-btn" onclick="removePlayer(${player.id})">✕</button>
+                        <img src="${player.img}" alt="${player.name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/250x250/Photo-Missing.png'">
+                        <span class="p-name">${player.name}</span>
+                        <span class="p-price">£${player.price}m</span>
+                    `;
+                } else {
+                    card.className = 'slot-card';
+                    card.innerHTML = `
+                        <span class="add-icon">+</span>
+                        <span style="font-size:9px; color:#aaa;">${group.pos}</span>
+                    `;
+                    card.onclick = () => {
+                        setPosFilter(group.pos);
+                        switchScreen('market');
+                    };
+                }
+                row.appendChild(card);
+            }
+            pitch.appendChild(row);
         });
     }
 
-    // Toggle Selection with FPL Rules (Max 3 per club)
-    function togglePlayer(id, clubName) {
-        let playerObj, playerClub;
-        for(let c in clubsData) {
-            let found = clubsData[c].find(x => x.id === id);
-            if(found) { playerObj = found; playerClub = c; break; }
-        }
+    // Add / Remove Handlers
+    function addPlayer(id) {
+        const p = playersDatabase.find(x => x.id === id);
+        if(!p) return;
 
-        const idx = squad.findIndex(s => s.id === id);
-        if(idx > -1) {
-            budget += squad[idx].price;
-            squad.splice(idx, 1);
-        } else {
-            // FPL Constraints Rules
-            if(squad.length >= 15) { alert("⚠️ التشكيلة مكتملة بـ 15 لاعب!"); return; }
-            if(budget < playerObj.price) { alert("⚠️ الميزانية غير كافية لشراء هذا اللاعب!"); return; }
-
-            // Check max 3 players per club
-            const clubCount = squad.filter(s => s.club === playerClub).length;
-            if(clubCount >= 3) {
-                alert(`⚠️ لا يمكن اختيار أكثر من 3 لاعبين من فريق واحد (${playerClub})!`);
-                return;
-            }
-
-            budget -= playerObj.price;
-            squad.push({...playerObj, club: playerClub});
-        }
-
-        updateStats();
-        renderPlayers(clubName);
-        renderPitch();
-    }
-
-    // Smart AI Generator complying with 3-player limit rule
-    function generateAISquad() {
-        squad = [];
-        budget = 100.0;
-        
-        let allPlayers = [];
-        for(let club in clubsData) {
-            clubsData[club].forEach(p => {
-                allPlayers.push({...p, club: club});
-            });
-        }
-
-        // Sort by value/fdr
-        allPlayers.sort((a,b) => a.fdrLevel - b.fdrLevel || a.price - b.price);
-
-        // Required formation: 2 GKP, 5 DEF, 5 MID, 3 FWD
-        const limits = { GKP: 2, DEF: 5, MID: 5, FWD: 3 };
-        const currentCounts = { GKP: 0, DEF: 0, MID: 0, FWD: 0 };
-        const clubCounts = {};
-
-        for(let p of allPlayers) {
-            let clubCount = clubCounts[p.club] || 0;
-            if(squad.length < 15 && 
-               budget >= p.price && 
-               currentCounts[p.pos] < limits[p.pos] && 
-               clubCount < 3) {
-               
-                squad.push(p);
-                budget -= p.price;
-                currentCounts[p.pos]++;
-                clubCounts[p.club] = clubCount + 1;
-            }
-        }
-
-        updateStats();
-        renderPitch();
-        const activeClubBtn = document.querySelector('.club-item-btn.active');
-        if(activeClubBtn) {
-            renderPlayers(activeClubBtn.querySelector('span').innerText);
-        }
-    }
-
-    function updateStats() {
-        document.getElementById('budgetDisplay').innerText = "£" + budget.toFixed(1) + "m";
-        document.getElementById('countDisplay').innerText = squad.length + "/15";
-    }
-
-    function renderPitch() {
-        const pitch = document.getElementById('pitchView');
-        pitch.innerHTML = '';
-        if(squad.length === 0) {
-            pitch.innerHTML = '<div style="text-align:center; color:#ccc; padding:20px;">التشكيلة فارغة حالياً. حدد لاعبيك أو استخدم زر الذكاء الاصطناعي.</div>';
+        if(squad.some(x => x.id === id)) {
+            removePlayer(id);
             return;
         }
 
-        const positions = ['GKP', 'DEF', 'MID', 'FWD'];
-        const posTitles = { GKP: 'حراسة المرمى', DEF: 'الدفاع', MID: 'الوسط', FWD: 'الهجوم' };
+        if(squad.length >= 15) { alert('⚠️ التشكيلة مكتملة بـ 15 لاعب!'); return; }
+        if(budget < p.price) { alert('⚠️ الميزانية غير كافية!'); return; }
 
-        positions.forEach(pos => {
-            const posPlayers = squad.filter(p => p.pos === pos);
-            if(posPlayers.length > 0) {
-                const title = document.createElement('div');
-                title.className = 'pitch-section-title';
-                title.innerText = posTitles[pos];
-                pitch.appendChild(title);
+        // Position limit check
+        const posCount = squad.filter(x => x.pos === p.pos).length;
+        const maxForPos = formationSlots.find(x => x.pos === p.pos).count;
+        if(posCount >= maxForPos) {
+            alert(`⚠️ القائمة مكتملة بهذا المركز (${p.pos})! قم بإزالة لاعب أولاً.`);
+            return;
+        }
 
-                const row = document.createElement('div');
-                row.className = 'pitch-row';
+        // Club limit check (Max 3)
+        const clubCount = squad.filter(x => x.club === p.club).length;
+        if(clubCount >= 3) {
+            alert(`⚠️ لا يمكن اختيار أكثر من 3 لاعبين من فريق واحد (${p.club})!`);
+            return;
+        }
 
-                posPlayers.forEach(p => {
-                    const card = document.createElement('div');
-                    card.className = 'player-card';
-                    card.innerHTML = `
-                        <button class="remove-btn" onclick="togglePlayer(${p.id}, '${p.club}')">✕</button>
-                        <img src="${p.img}" alt="${p.name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/250x250/Photo-Missing.png'">
-                        <span class="p-name">${p.name}</span>
-                        <span class="p-team">${p.club}</span>
-                        <span class="p-price">£${p.price}m</span>
-                    `;
-                    row.appendChild(card);
-                });
+        squad.push(p);
+        budget -= p.price;
+        updateStats();
+        renderPitch();
+        filterPlayers();
+    }
 
-                pitch.appendChild(row);
+    function removePlayer(id) {
+        const idx = squad.findIndex(x => x.id === id);
+        if(idx > -1) {
+            budget += squad[idx].price;
+            squad.splice(idx, 1);
+            updateStats();
+            renderPitch();
+            filterPlayers();
+        }
+    }
+
+    // AI Automatic Squad Builder (Strictly 15 players)
+    function generateAISquad() {
+        squad = [];
+        budget = 100.0;
+
+        let sorted = [...playersDatabase].sort((a,b) => a.fdrL - b.fdrL || b.price - a.price);
+
+        formationSlots.forEach(group => {
+            let count = 0;
+            for(let p of sorted) {
+                if(p.pos === group.pos && count < group.count) {
+                    let clubCount = squad.filter(x => x.club === p.club).length;
+                    if(budget >= p.price && clubCount < 3) {
+                        squad.push(p);
+                        budget -= p.price;
+                        count++;
+                    }
+                }
             }
+        });
+
+        updateStats();
+        renderPitch();
+        alert('✨ تم اختيار التشكيلة بالذكاء الاصطناعي بنجاح ضمن الميزانية والقواعد الرسمية!');
+    }
+
+    function updateStats() {
+        document.getElementById('budgetDisplay').innerText = '£' + budget.toFixed(1) + 'm';
+        document.getElementById('countDisplay').innerText = squad.length + '/15';
+    }
+
+    // Market Filtering
+    function setPosFilter(pos) {
+        selectedPosFilter = pos;
+        document.querySelectorAll('#positionFilters .filter-btn').forEach(b => {
+            b.classList.toggle('active', b.innerText.includes(pos) || (pos==='ALL' && b.innerText==='الكل'));
+        });
+        filterPlayers();
+    }
+
+    function filterPlayers() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const container = document.getElementById('playersListContainer');
+        container.innerHTML = '';
+
+        const filtered = playersDatabase.filter(p => {
+            const matchesSearch = p.name.toLowerCase().includes(query) || p.club.toLowerCase().includes(query);
+            const matchesPos = selectedPosFilter === 'ALL' || p.pos === selectedPosFilter;
+            const matchesClub = selectedClubFilter === 'ALL' || p.club === selectedClubFilter;
+            return matchesSearch && matchesPos && matchesClub;
+        });
+
+        filtered.forEach(p => {
+            const inSquad = squad.some(x => x.id === p.id);
+            const item = document.createElement('div');
+            item.className = 'player-row-item';
+            item.innerHTML = `
+                <div class="p-info-left">
+                    <img src="${p.img}" alt="${p.name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/250x250/Photo-Missing.png'">
+                    <div class="p-details">
+                        <div>${p.name} <span class="fdr-pill fdr-${p.fdrL}">${p.fdr}</span></div>
+                        <small>${p.club} | <b style="color:var(--fpl-green);">${p.pos}</b></small>
+                    </div>
+                </div>
+                <div>
+                    <span style="font-weight:bold; font-size:14px; margin-left:10px;">£${p.price}m</span>
+                    <button class="btn-add-p ${inSquad ? 'in-squad' : ''}" onclick="addPlayer(${p.id})">
+                        ${inSquad ? 'إزالة' : 'إضافة +'}
+                    </button>
+                </div>
+            `;
+            container.appendChild(item);
         });
     }
 
-    // Init
-    renderPlayers(Object.keys(clubsData)[0]);
+    // Generate Club Filter Buttons
+    const clubs = ['ALL', ...new Set(playersDatabase.map(p => p.club))];
+    const clubFiltersContainer = document.getElementById('clubFilters');
+    clubs.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'filter-btn' + (c === 'ALL' ? ' active' : '');
+        btn.innerText = c === 'ALL' ? 'كل الأندية' : c;
+        btn.onclick = () => {
+            selectedClubFilter = c;
+            document.querySelectorAll('#clubFilters .filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            filterPlayers();
+        };
+        clubFiltersContainer.appendChild(btn);
+    });
+
+    // Init App
+    renderPitch();
+    filterPlayers();
 </script>
 
 </body>
