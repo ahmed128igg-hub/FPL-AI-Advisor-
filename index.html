@@ -3,169 +3,254 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>FPL AI Pro — 2026 Squad Builder</title>
+<title>FPL AI ADVISOR PRO 2026</title>
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;900&display=swap" rel="stylesheet">
 <style>
 :root {
-  --bg: #090d16;
-  --panel: #111827;
-  --card: #1f2937;
-  --border: #374151;
+  --bg: #060911;
+  --panel: #0e1626;
+  --card: #162238;
+  --border: #233554;
   --green: #00ff87;
   --purple: #38003c;
   --pink: #e90052;
-  --yellow: #f59e0b;
-  --txt: #f9fafb;
-  --muted: #9ca3af;
+  --yellow: #ffb703;
+  --txt: #ffffff;
+  --muted: #8e9bae;
   --easy: #007a33;
   --med: #e2b100;
   --hard: #dc2626;
 }
 * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
-body { margin: 0; background: var(--bg); color: var(--txt); padding: 20px; }
-.container { max-width: 1300px; margin: 0 auto; }
+body { margin: 0; background: var(--bg); color: var(--txt); padding: 15px; }
+.container { max-width: 1400px; margin: 0 auto; }
+
+/* Main Brand Header */
+.app-header { background: linear-gradient(135deg, var(--purple), #1d0020); border: 2px solid var(--border); border-radius: 18px; padding: 20px 30px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px; margin-bottom: 20px; box-shadow: 0 10px 30px rgba(56,0,60,0.6); }
+.brand-title { display: flex; align-items: center; gap: 12px; }
+.brand-logo { width: 50px; height: 50px; background: var(--green); color: var(--purple); font-weight: 900; font-size: 24px; border-radius: 12px; display: grid; place-items: center; box-shadow: 0 0 15px rgba(0,255,135,0.4); }
+.brand-title h1 { margin: 0; font-size: 26px; color: #fff; letter-spacing: 0.5px; }
+.brand-title p { margin: 2px 0 0; color: var(--green); font-size: 13px; font-weight: 700; }
 
 /* Budget Bar */
-.budget-bar { background: linear-gradient(135deg, var(--purple), #1f0022); border: 1px solid var(--border); border-radius: 16px; padding: 20px; display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; margin-bottom: 25px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-.b-item span { color: #d8b4fe; font-size: 13px; font-weight: 500; display: block; }
-.b-item strong { font-size: 24px; color: var(--green); font-weight: 900; }
+.budget-bar { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 15px 25px; display: flex; gap: 20px; flex-wrap: wrap; justify-content: space-around; width: 100%; margin-top: 10px; }
+.b-item { text-align: center; }
+.b-item span { color: var(--muted); font-size: 12px; display: block; font-weight: 500; }
+.b-item strong { font-size: 22px; color: var(--green); font-weight: 900; }
 
-/* Main Grid */
-.layout { display: grid; grid-template-columns: 1fr 450px; gap: 20px; }
+/* Layout Grid */
+.main-layout { display: grid; grid-template-columns: 1fr 480px; gap: 20px; }
 
-/* Pitch Design */
-.pitch-container { background: radial-gradient(circle, #15803d 0%, #166534 100%); border: 4px solid #22c55e; border-radius: 20px; padding: 20px 10px; min-height: 620px; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: inset 0 0 50px rgba(0,0,0,0.6); }
-.pitch-line { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.2); }
-.pitch-circle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 120px; height: 120px; border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; }
+/* Controls & Search */
+.controls-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 14px; padding: 16px; margin-bottom: 15px; display: flex; flex-direction: column; gap: 12px; }
+.search-box { width: 100%; background: var(--bg); border: 1px solid var(--border); color: #fff; padding: 12px 16px; border-radius: 10px; font-size: 14px; outline: none; }
+.search-box:focus { border-color: var(--green); }
 
-.pitch-row { display: flex; justify-content: space-around; align-items: center; z-index: 2; }
-.pitch-card { background: rgba(17, 24, 39, 0.92); border: 1px solid var(--border); border-radius: 10px; width: 90px; text-align: center; padding: 6px; cursor: pointer; transition: 0.2s; position: relative; }
-.pitch-card:hover { border-color: var(--green); transform: scale(1.08); }
-.pitch-card img { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; background: var(--panel); margin-bottom: 4px; border: 2px solid var(--green); }
-.pitch-card .p-name { font-size: 11px; font-weight: 700; white-overflow: ellipsis; overflow: hidden; white-space: nowrap; }
-.pitch-card .p-price { font-size: 10px; color: var(--green); }
-.badge-c { position: absolute; top: -5px; right: -5px; background: var(--yellow); color: #000; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; display: grid; place-items: center; border: 1px solid #000; }
-
-/* Bench */
-.bench-box { background: rgba(0,0,0,0.4); border-top: 2px dashed rgba(255,255,255,0.2); padding-top: 10px; margin-top: 10px; border-radius: 0 0 16px 16px; }
+.filter-group { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 5px; }
+.filter-btn { background: var(--card); border: 1px solid var(--border); color: var(--txt); padding: 7px 14px; border-radius: 8px; font-size: 12px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: 0.2s; }
+.filter-btn.active, .filter-btn:hover { background: var(--green); color: #000; border-color: var(--green); }
 
 /* Market Grid */
-.market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 12px; height: 620px; overflow-y: auto; padding-left: 5px; }
-.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; }
-.card-header { display: flex; gap: 10px; align-items: center; }
-.card-header img { width: 40px; height: 40px; border-radius: 50%; border: 1px solid var(--border); }
-.card-title { font-weight: 700; font-size: 15px; }
-.card-meta { font-size: 12px; color: var(--muted); }
+.market-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(210px, 1fr)); gap: 12px; max-height: 620px; overflow-y: auto; padding-left: 5px; }
+.player-card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 12px; display: flex; flex-direction: column; justify-content: space-between; position: relative; transition: 0.2s; }
+.player-card:hover { border-color: var(--green); transform: translateY(-2px); }
+.p-top { display: flex; gap: 10px; align-items: center; }
+.p-img { width: 45px; height: 45px; border-radius: 50%; background: var(--panel); border: 2px solid var(--border); object-fit: cover; }
+.p-info { flex: 1; }
+.p-info strong { display: block; font-size: 14px; }
+.p-info small { color: var(--muted); font-size: 11px; }
 
-/* FDR Fix */
-.fix-list { display: flex; gap: 4px; margin: 10px 0; }
-.fix-item { flex: 1; text-align: center; padding: 4px; border-radius: 6px; font-size: 10px; font-weight: 700; color: #fff; }
-.fix-1 { background: var(--easy); }
-.fix-2 { background: var(--med); color: #000; }
-.fix-3 { background: var(--hard); }
+.fdr-row { display: flex; gap: 4px; margin: 10px 0; }
+.fdr-box { flex: 1; text-align: center; padding: 3px; border-radius: 4px; font-size: 10px; font-weight: 700; color: #fff; }
+.fdr-1 { background: var(--easy); }
+.fdr-2 { background: var(--med); color: #000; }
+.fdr-3 { background: var(--hard); }
 
-.btn { background: var(--green); color: #000; border: 0; padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; }
-.btn-danger { background: var(--pink); color: #fff; }
+.btn-act { background: var(--green); color: #000; border: 0; padding: 8px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; transition: 0.2s; }
+.btn-act.remove { background: var(--pink); color: #fff; }
 
-/* Analytics Panel */
-.analytics { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-top: 20px; }
-.ana-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-.ana-card { background: var(--card); padding: 12px; border-radius: 10px; border: 1px solid var(--border); }
+/* REALISTIC PITCH DESIGN */
+.pitch-wrapper { background: #1b5e20; border: 4px solid #fff; border-radius: 20px; padding: 20px 10px 10px; min-height: 640px; display: flex; flex-direction: column; justify-content: space-between; position: relative; box-shadow: inset 0 0 60px rgba(0,0,0,0.8); background-image: repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(0, 0, 0, 0.15) 40px, rgba(0, 0, 0, 0.15) 80px); }
 
-@media (max-width: 950px) { .layout { grid-template-columns: 1fr; } }
+/* Pitch Lines */
+.pitch-center-line { position: absolute; top: 50%; left: 0; right: 0; height: 2px; background: rgba(255,255,255,0.4); }
+.pitch-center-circle { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 110px; height: 110px; border: 2px solid rgba(255,255,255,0.4); border-radius: 50%; }
+
+.pitch-row { display: flex; justify-content: space-around; align-items: center; z-index: 2; position: relative; }
+.p-pitch-card { background: rgba(14, 22, 38, 0.95); border: 1px solid var(--border); border-radius: 10px; width: 85px; text-align: center; padding: 6px; cursor: pointer; transition: 0.2s; position: relative; }
+.p-pitch-card:hover { border-color: var(--green); transform: scale(1.1); }
+.p-pitch-card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid var(--green); background: #000; }
+.p-pitch-card .p-pname { font-size: 11px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #fff; }
+.p-pitch-card .p-pprice { font-size: 10px; color: var(--green); font-weight: 700; }
+.badge-cap { position: absolute; top: -6px; right: -6px; background: var(--yellow); color: #000; font-weight: 900; border-radius: 50%; width: 20px; height: 20px; font-size: 11px; display: grid; place-items: center; border: 1px solid #000; box-shadow: 0 0 5px rgba(0,0,0,0.5); }
+
+/* Bench Panel */
+.bench-area { background: rgba(0,0,0,0.5); border-top: 2px dashed rgba(255,255,255,0.3); padding-top: 10px; margin-top: 10px; border-radius: 0 0 16px 16px; }
+
+/* AI Analytics Box */
+.ai-analytics { background: var(--panel); border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-top: 25px; }
+.ai-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-top: 10px; }
+.ai-card { background: var(--card); padding: 14px; border-radius: 12px; border: 1px solid var(--border); }
+
+@media (max-width: 1000px) { .main-layout { grid-template-columns: 1fr; } }
 </style>
 </head>
 <body>
 
 <div class="container">
-  <div class="budget-bar">
-    <div class="b-item"><span>الميزانية المتبقية</span><strong id="remBudget">100.0m</strong></div>
-    <div class="b-item"><span>النقاط المتوقعة (xP)</span><strong id="totalXp">0.0</strong></div>
-    <div class="b-item"><span>تشكيلة أساسية</span><strong id="mainCount">0 / 11</strong></div>
-    <div class="b-item"><span>دكة الاحتياط</span><strong id="benchCount">0 / 4</strong></div>
-  </div>
-
-  <div class="layout">
-    <div>
-      <h3 style="margin:0 0 12px">سوق اللاعبين وترشيحات الـ AI</h3>
-      <div class="market-grid" id="market"></div>
+  <!-- Brand Header -->
+  <div class="app-header">
+    <div class="brand-title">
+      <div class="brand-logo">FPL</div>
+      <div>
+        <h1>FPL AI ADVISOR PRO 2026</h1>
+        <p>المساعد الذكي لبناء تشكيلة الفنتازي وتحليل المواجهات</p>
+      </div>
     </div>
 
-    <div>
-      <h3 style="margin:0 0 12px">ملعب التشكيلة الأساسية</h3>
-      <div class="pitch-container">
-        <div class="pitch-line"></div>
-        <div class="pitch-circle"></div>
+    <div class="budget-bar">
+      <div class="b-item"><span>الميزانية المتبقية</span><strong id="remBudget">100.0m</strong></div>
+      <div class="b-item"><span>النقاط المتوقعة (xP)</span><strong id="totalXp">0.0</strong></div>
+      <div class="b-item"><span>التشكيلة الأساسية</span><strong id="mainCount">0 / 11</strong></div>
+      <div class="b-item"><span>دكة الاحتياط</span><strong id="benchCount">0 / 4</strong></div>
+    </div>
+  </div>
 
+  <div class="main-layout">
+    <!-- Left: Controls & Players Market -->
+    <div>
+      <div class="controls-panel">
+        <input type="text" class="search-box" id="searchInput" placeholder="🔍 إبحث عن أي لاعب (هالاند، ساكا، تروسار...)" oninput="filterPlayers()">
+        
+        <div class="filter-group" id="posFilters">
+          <button class="filter-btn active" onclick="setPosFilter('ALL', this)">جميع المراكز</button>
+          <button class="filter-btn" onclick="setPosFilter('GKP', this)">حراس المرمى</button>
+          <button class="filter-btn" onclick="setPosFilter('DEF', this)">الدفاع</button>
+          <button class="filter-btn" onclick="setPosFilter('MID', this)">الوسط</button>
+          <button class="filter-btn" onclick="setPosFilter('FWD', this)">الهجوم</button>
+        </div>
+
+        <div class="filter-group" id="teamFilters">
+          <button class="filter-btn active" onclick="setTeamFilter('ALL', this)">جميع الأندية</button>
+          <button class="filter-btn" onclick="setTeamFilter('MCI', this)">مانشستر سيتي</button>
+          <button class="filter-btn" onclick="setTeamFilter('ARS', this)">أرسنال</button>
+          <button class="filter-btn" onclick="setTeamFilter('LIV', this)">ليفربول</button>
+          <button class="filter-btn" onclick="setTeamFilter('CHE', this)">تشيلسي</button>
+          <button class="filter-btn" onclick="setTeamFilter('NEW', this)">نيوكاسل</button>
+          <button class="filter-btn" onclick="setTeamFilter('BHA', this)">برايتون</button>
+        </div>
+      </div>
+
+      <div class="market-grid" id="marketGrid"></div>
+    </div>
+
+    <!-- Right: Realistic Pitch -->
+    <div>
+      <div class="pitch-wrapper">
+        <div class="pitch-center-line"></div>
+        <div class="pitch-center-circle"></div>
+
+        <!-- Pitch Rows -->
         <div class="pitch-row" id="rowFWD"></div>
         <div class="pitch-row" id="rowMID"></div>
         <div class="pitch-row" id="rowDEF"></div>
         <div class="pitch-row" id="rowGKP"></div>
 
-        <div class="bench-box">
-          <small style="display:block; text-align:center; color:var(--muted); margin-bottom:6px">دكة الاحتياط (Bench)</small>
+        <!-- Bench Row -->
+        <div class="bench-area">
+          <small style="display:block; text-align:center; color:#ddd; margin-bottom:6px; font-weight:700">دكة الاحتياط (BENCH)</small>
           <div class="pitch-row" id="rowBENCH"></div>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Advanced Analytics -->
-  <div class="analytics">
-    <h3 style="margin-top:0; color:var(--green)">📊 تحليلات الذكاء الاصطناعي المتقدمة للتشكيلة</h3>
-    <div class="ana-grid">
-      <div class="ana-card">
-        <small style="color:var(--muted)">الكابتن المقترح (Captain)</small>
-        <h4 id="capPick" style="margin:5px 0 0; font-size:18px">-</h4>
+  <!-- AI Analytics -->
+  <div class="ai-analytics">
+    <h3 style="margin:0; color:var(--green)">⚡ تحليلات ومقترحات الذكاء الاصطناعي (AI Analytics)</h3>
+    <div class="ai-grid">
+      <div class="ai-card">
+        <small style="color:var(--muted)">خيار الكابتن المثالي (C)</small>
+        <h3 id="aiCap" style="margin:5px 0 0; color:var(--yellow)">-</h3>
       </div>
-      <div class="ana-card">
-        <small style="color:var(--muted)">معدل صعوبة الجدول (FDR Index)</small>
-        <h4 id="fdrScore" style="margin:5px 0 0; font-size:18px">-</h4>
+      <div class="ai-card">
+        <small style="color:var(--muted)">معدل صعوبة المواجهات (FDR Index)</small>
+        <h3 id="aiFdr" style="margin:5px 0 0; color:#fff">-</h3>
       </div>
-      <div class="ana-card">
-        <small style="color:var(--muted)">مخاطر التدوير والدكة (Rotation Risk)</small>
-        <h4 id="rotRisk" style="margin:5px 0 0; font-size:18px; color:var(--green)">منخفضة</h4>
+      <div class="ai-card">
+        <small style="color:var(--muted)">مستوى مخاطر التدوير والدكة</small>
+        <h3 id="aiRisk" style="margin:5px 0 0; color:var(--green)">منخفض جداً</h3>
       </div>
     </div>
   </div>
 </div>
 
 <script>
-// قاعدة بيانات محدثة بأسعار الموسم وصور دقيقة
+// قاعدة بيانات واسعة ومحدثة بدقة لعام 2026
 const database = [
-  { id: 1, name: "Erling Haaland", team: "MCI", pos: "FWD", price: 15.0, xP: 9.2, rot: "منخفضة", img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p223094.png", fix: [{opp:"BHA (H)", r:1}, {opp:"ARS (A)", r:3}, {opp:"NFO (H)", r:1}] },
-  { id: 2, name: "Mohamed Salah", team: "LIV", pos: "MID", price: 12.5, xP: 8.8, rot: "منخفضة", img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p118748.png", fix: [{opp:"EVE (H)", r:1}, {opp:"CHE (A)", r:2}, {opp:"TOT (H)", r:2}] },
-  { id: 3, name: "Bukayo Saka", team: "ARS", pos: "MID", price: 10.0, xP: 8.0, rot: "منخفضة", img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p223340.png", fix: [{opp:"WHU (H)", r:1}, {opp:"MCI (H)", r:3}, {opp:"FUL (A)", r:1}] },
-  { id: 4, name: "Leandro Trossard", team: "ARS", pos: "MID", price: 7.0, xP: 6.9, rot: "متوسطة", img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p116151.png", fix: [{opp:"WHU (H)", r:1}, {opp:"MCI (H)", r:3}, {opp:"FUL (A)", r:1}] },
-  { id: 5, name: "Alexander Isak", team: "NEW", pos: "FWD", price: 8.5, xP: 7.3, rot: "منخفضة", img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p219168.png", fix: [{opp:"BOU (A)", r:2}, {opp:"WOL (H)", r:1}, {opp:"LIV (A)", r:3}] },
-  { id: 6, name: "João Pedro", team: "BHA", pos: "FWD", price: 5.5, xP: 6.2, rot: "منخفضة", img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p477061.png", fix: [{opp:"MCI (A)", r:3}, {opp:"CRY (H)", r:1}, {opp:"BUR (A)", r:1}] },
-  { id: 7, name: "Riccardo Calafiori", team: "ARS", pos: "DEF", price: 5.8, xP: 5.9, rot: "متوسطة", img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p487822.png", fix: [{opp:"WHU (H)", r:1}, {opp:"MCI (H)", r:3}, {opp:"FUL (A)", r:1}] },
-  { id: 8, name: "David Raya", team: "ARS", pos: "GKP", price: 5.5, xP: 5.4, rot: "منخفضة", img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p154561.png", fix: [{opp:"WHU (H)", r:1}, {opp:"MCI (H)", r:3}, {opp:"FUL (A)", r:1}] },
-  { id: 9, name: "Cole Palmer", team: "CHE", pos: "MID", price: 10.5, xP: 8.2, rot: "منخفضة", img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p244851.png", fix: [{opp:"MUN (H)", r:2}, {opp:"LIV (H)", r:2}, {opp:"WHU (A)", r:1}] }
+  { id: 1, name: "Erling Haaland", team: "MCI", pos: "FWD", price: 15.5, xP: 9.5, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p223094.png", fix: [{opp:"BHA (H)", r:1}, {opp:"ARS (A)", r:3}, {opp:"NFO (H)", r:1}] },
+  { id: 2, name: "Bukayo Saka", team: "ARS", pos: "MID", price: 10.0, xP: 8.2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p223340.png", fix: [{opp:"WHU (H)", r:1}, {opp:"MCI (H)", r:3}, {opp:"FUL (A)", r:1}] },
+  { id: 3, name: "Leandro Trossard", team: "ARS", pos: "MID", price: 7.0, xP: 6.9, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p116151.png", fix: [{opp:"WHU (H)", r:1}, {opp:"MCI (H)", r:3}, {opp:"FUL (A)", r:1}] },
+  { id: 4, name: "Alexander Isak", team: "NEW", pos: "FWD", price: 8.5, xP: 7.4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p219168.png", fix: [{opp:"BOU (A)", r:2}, {opp:"WOL (H)", r:1}, {opp:"LIV (A)", r:3}] },
+  { id: 5, name: "João Pedro", team: "BHA", pos: "FWD", price: 5.5, xP: 6.3, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p477061.png", fix: [{opp:"MCI (A)", r:3}, {opp:"CRY (H)", r:1}, {opp:"BUR (A)", r:1}] },
+  { id: 6, name: "Riccardo Calafiori", team: "ARS", pos: "DEF", price: 5.8, xP: 6.0, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p487822.png", fix: [{opp:"WHU (H)", r:1}, {opp:"MCI (H)", r:3}, {opp:"FUL (A)", r:1}] },
+  { id: 7, name: "Cole Palmer", team: "CHE", pos: "MID", price: 10.5, xP: 8.4, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p244851.png", fix: [{opp:"MUN (H)", r:2}, {opp:"LIV (H)", r:2}, {opp:"WHU (A)", r:1}] },
+  { id: 8, name: "David Raya", team: "ARS", pos: "GKP", price: 5.5, xP: 5.5, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p154561.png", fix: [{opp:"WHU (H)", r:1}, {opp:"MCI (H)", r:3}, {opp:"FUL (A)", r:1}] },
+  { id: 9, name: "Phil Foden", team: "MCI", pos: "MID", price: 9.5, xP: 7.8, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p209244.png", fix: [{opp:"BHA (H)", r:1}, {opp:"ARS (A)", r:3}, {opp:"NFO (H)", r:1}] },
+  { id: 10, name: "Josko Gvardiol", team: "MCI", pos: "DEF", price: 6.0, xP: 6.2, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p477424.png", fix: [{opp:"BHA (H)", r:1}, {opp:"ARS (A)", r:3}, {opp:"NFO (H)", r:1}] },
+  { id: 11, name: "Gabriel Magalhães", team: "ARS", pos: "DEF", price: 6.0, xP: 6.1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p226597.png", fix: [{opp:"WHU (H)", r:1}, {opp:"MCI (H)", r:3}, {opp:"FUL (A)", r:1}] },
+  { id: 12, name: "William Saliba", team: "ARS", pos: "DEF", price: 6.0, xP: 6.1, img: "https://resources.premierleague.com/premierleague/photos/players/250x250/p244222.png", fix: [{opp:"WHU (H)", r:1}, {opp:"MCI (H)", r:3}, {opp:"FUL (A)", r:1}] }
 ];
 
-let mySquad = []; // 11 أساسي + 4 احتياطي (إجمالي 15)
+let mySquad = [];
+let currentPosFilter = 'ALL';
+let currentTeamFilter = 'ALL';
 
-function renderMarket() {
-  const container = document.getElementById('market');
-  container.innerHTML = database.map(p => {
+function filterPlayers() {
+  const query = document.getElementById('searchInput').value.toLowerCase();
+  const filtered = database.filter(p => {
+    const matchName = p.name.toLowerCase().includes(query);
+    const matchPos = currentPosFilter === 'ALL' || p.pos === currentPosFilter;
+    const matchTeam = currentTeamFilter === 'ALL' || p.team === currentTeamFilter;
+    return matchName && matchPos && matchTeam;
+  });
+  renderMarket(filtered);
+}
+
+function setPosFilter(pos, btn) {
+  currentPosFilter = pos;
+  document.querySelectorAll('#posFilters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterPlayers();
+}
+
+function setTeamFilter(team, btn) {
+  currentTeamFilter = team;
+  document.querySelectorAll('#teamFilters .filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  filterPlayers();
+}
+
+function renderMarket(list = database) {
+  const grid = document.getElementById('marketGrid');
+  grid.innerHTML = list.map(p => {
     const isAdded = mySquad.some(x => x.id === p.id);
     return `
-      <div class="card">
-        <div class="card-header">
-          <img src="${p.img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/40'">
-          <div>
-            <div class="card-title">${p.name}</div>
-            <div class="card-meta">${p.team} | ${p.pos} - <b>${p.price}m</b></div>
+      <div class="player-card">
+        <div class="p-top">
+          <img class="p-img" src="${p.img}" alt="${p.name}" onerror="this.src='https://via.placeholder.com/45'">
+          <div class="p-info">
+            <strong>${p.name}</strong>
+            <small>${p.team} | ${p.pos} - <b style="color:var(--green)">${p.price}m</b></small>
           </div>
         </div>
 
-        <div class="fix-list">
-          ${p.fix.map(f => `<div class="fix-item fix-${f.r}">${f.opp}</div>`).join('')}
+        <div class="fdr-row">
+          ${p.fix.map(f => `<div class="fdr-box fdr-${f.r}">${f.opp}</div>`).join('')}
         </div>
 
-        <button class="btn ${isAdded ? 'btn-danger' : ''}" onclick="togglePlayer(${p.id})">
-          ${isAdded ? 'إزالة اللاعب' : '+ إضافة للفريق'}
+        <button class="btn-act ${isAdded ? 'remove' : ''}" onclick="togglePlayer(${p.id})">
+          ${isAdded ? 'إزالة من التشكيلة' : '+ إضافة للتشكيلة'}
         </button>
       </div>
     `;
@@ -179,11 +264,11 @@ function togglePlayer(id) {
   if (idx > -1) {
     mySquad.splice(idx, 1);
   } else {
-    if (mySquad.length >= 15) return alert("وصلت للحد الأقصى (15 لاعب)!");
+    if (mySquad.length >= 15) return alert("وصلت للحد الأقصى للتشكيلة (15 لاعب)!");
     mySquad.push(p);
   }
   updateSquad();
-  renderMarket();
+  filterPlayers();
 }
 
 function updateSquad() {
@@ -198,47 +283,42 @@ function updateSquad() {
   document.getElementById('mainCount').innerText = `${mainSquad.length} / 11`;
   document.getElementById('benchCount').innerText = `${benchSquad.length} / 4`;
 
-  // Clear pitch
   ['rowFWD', 'rowMID', 'rowDEF', 'rowGKP', 'rowBENCH'].forEach(id => document.getElementById(id).innerHTML = '');
 
-  // Render Main Pitch
-  let topXpPlayer = mainSquad.length ? [...mainSquad].sort((a,b) => b.xP - a.xP)[0] : null;
+  let topPlayer = mainSquad.length ? [...mainSquad].sort((a,b) => b.xP - a.xP)[0] : null;
 
   mainSquad.forEach(p => {
-    const isCap = topXpPlayer && topXpPlayer.id === p.id;
+    const isCap = topPlayer && topPlayer.id === p.id;
     const el = createPitchCard(p, isCap);
     const posMap = { FWD: 'rowFWD', MID: 'rowMID', DEF: 'rowDEF', GKP: 'rowGKP' };
     document.getElementById(posMap[p.pos]).appendChild(el);
   });
 
-  // Render Bench
   benchSquad.forEach(p => {
     const el = createPitchCard(p, false);
     document.getElementById('rowBENCH').appendChild(el);
   });
 
-  // Analytics
-  if (topXpPlayer) {
-    document.getElementById('capPick').innerText = `${topXpPlayer.name} (${(topXpPlayer.xP * 2).toFixed(1)} pts)`;
+  if (topPlayer) {
+    document.getElementById('aiCap').innerText = `${topPlayer.name} (${(topPlayer.xP * 2).toFixed(1)} pts)`;
   } else {
-    document.getElementById('capPick').innerText = '-';
+    document.getElementById('aiCap').innerText = '-';
   }
 
-  // Calc average FDR
   if (mainSquad.length) {
-    let avgFix = mainSquad.reduce((acc, p) => acc + (p.fix[0].r || 2), 0) / mainSquad.length;
-    document.getElementById('fdrScore').innerText = avgFix < 1.7 ? 'سهل جداً 🟢' : avgFix < 2.3 ? 'متوسط 🟡' : 'صعب 🔴';
+    let avg = mainSquad.reduce((acc, p) => acc + p.fix[0].r, 0) / mainSquad.length;
+    document.getElementById('aiFdr').innerText = avg < 1.7 ? 'سهل جداً 🟢' : avg < 2.3 ? 'متوسط 🟡' : 'صعب 🔴';
   }
 }
 
 function createPitchCard(p, isCap) {
   const el = document.createElement('div');
-  el.className = 'pitch-card';
+  el.className = 'p-pitch-card';
   el.innerHTML = `
-    ${isCap ? '<div class="badge-c">C</div>' : ''}
+    ${isCap ? '<div class="badge-cap">C</div>' : ''}
     <img src="${p.img}" onerror="this.src='https://via.placeholder.com/40'">
-    <div class="p-name">${p.name.split(' ').pop()}</div>
-    <div class="p-price">${p.price}m</div>
+    <div class="p-pname">${p.name.split(' ').pop()}</div>
+    <div class="p-pprice">${p.price}m</div>
   `;
   el.onclick = () => togglePlayer(p.id);
   return el;
