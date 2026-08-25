@@ -3,349 +3,256 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FPL Fantasy Pro</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
+    <title>FPL Pro Engine v5.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
-            --fpl-purple: #37003c;
-            --fpl-green: #00ff87;
-            --fpl-pink: #e90052;
-            --fpl-cyan: #04f5ff;
-            --bg-dark: #0f0114;
-            --card-glass: rgba(255, 255, 255, 0.05);
-            --card-border: rgba(255, 255, 255, 0.12);
+            --primary: #02efff;
+            --accent: #ff0055;
+            --bg-main: #0b0214;
+            --bg-card: rgba(255, 255, 255, 0.06);
+            --border: rgba(255, 255, 255, 0.15);
+            --text-main: #ffffff;
         }
 
-        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Tajawal', sans-serif; user-select: none; }
 
-        body {
-            font-family: 'Poppins', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-dark);
-            color: #ffffff;
-            padding-bottom: 75px;
-            overflow-x: hidden;
+        body { background-color: var(--bg-main); color: var(--text-main); padding-bottom: 75px; overflow-x: hidden; }
+
+        /* Full Auth Gateway */
+        #auth-gate {
+            position: fixed; inset: 0; background: #05000a; z-index: 50000;
+            display: flex; align-items: center; justify-content: center; padding: 20px;
         }
 
-        /* Login Screen Overlay */
-        #login-overlay {
-            position: fixed; inset: 0;
-            background: radial-gradient(circle at center, #4a0052 0%, var(--fpl-purple) 100%);
-            z-index: 20000; display: flex; align-items: center; justify-content: center;
-            padding: 20px;
+        .auth-box {
+            background: rgba(20, 5, 30, 0.95); border: 2px solid var(--primary);
+            box-shadow: 0 0 35px rgba(2, 239, 255, 0.25); border-radius: 20px;
+            padding: 30px 20px; width: 100%; max-width: 380px; text-align: center;
         }
 
-        .login-card {
-            background: rgba(15, 1, 20, 0.85);
-            border: 2px solid var(--fpl-green);
-            box-shadow: 0 0 25px rgba(0, 255, 135, 0.3);
-            border-radius: 20px; padding: 30px 24px; width: 100%; max-width: 360px;
-            text-align: center; backdrop-filter: blur(10px);
+        .auth-box h2 { color: var(--primary); font-size: 22px; margin-bottom: 5px; font-weight: 900; }
+        .auth-box p { color: #888; font-size: 12px; margin-bottom: 20px; }
+
+        .auth-input {
+            width: 100%; padding: 13px; margin-bottom: 12px; border-radius: 10px;
+            border: 1px solid var(--border); background: rgba(255, 255, 255, 0.05);
+            color: #fff; font-size: 14px; outline: none; transition: 0.3s;
+        }
+        .auth-input:focus { border-color: var(--primary); background: rgba(255, 255, 255, 0.1); }
+
+        .auth-btn {
+            width: 100%; padding: 12px; border-radius: 10px; border: none;
+            background: linear-gradient(135deg, var(--primary), #0088ff);
+            color: #000; font-weight: 900; font-size: 15px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(2, 239, 255, 0.4); margin-top: 5px;
         }
 
-        .login-logo {
-            width: 70px; height: 70px; margin: 0 auto 15px auto;
-            background: linear-gradient(135deg, var(--fpl-green), var(--fpl-cyan));
-            border-radius: 50%; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 15px var(--fpl-green);
-        }
-
-        .login-input {
-            width: 100%; padding: 12px; margin: 8px 0; border-radius: 10px;
-            border: 1px solid var(--card-border); background: rgba(255,255,255,0.08);
-            color: #fff; font-size: 13px; outline: none; transition: border 0.3s;
-        }
-        .login-input:focus { border-color: var(--fpl-green); }
-
-        .btn-login {
-            width: 100%; padding: 12px; margin-top: 15px; border-radius: 10px;
-            background: linear-gradient(135deg, var(--fpl-green), var(--fpl-cyan));
-            color: #000; font-weight: 800; border: none; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0,255,135,0.4); font-size: 14px;
-        }
-
-        /* Splash Screen */
-        #splash-screen {
-            position: fixed; inset: 0;
-            background: radial-gradient(circle at center, #590062 0%, var(--fpl-purple) 100%);
-            z-index: 10000; display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.5s ease, visibility 0.5s;
-        }
-
-        .splash-logo {
-            width: 100px; height: 100px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--fpl-green), var(--fpl-pink));
-            padding: 4px; display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 0 30px rgba(0, 255, 135, 0.6);
-            animation: pulse 1.5s infinite ease-in-out;
-        }
-
-        .splash-logo-inner {
-            background: var(--fpl-purple); width: 100%; height: 100%; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; font-weight: 900;
-            color: var(--fpl-green); font-size: 24px;
-        }
-
-        @keyframes pulse {
-            0% { transform: scale(0.95); }
-            70% { transform: scale(1.05); }
-            100% { transform: scale(0.95); }
-        }
-
+        /* Top Bar & Stats */
         header {
-            background: rgba(55, 0, 60, 0.9);
-            backdrop-filter: blur(10px); border-bottom: 2px solid var(--fpl-green);
-            padding: 12px 16px; position: sticky; top: 0; z-index: 100;
-            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(15, 2, 25, 0.9); backdrop-filter: blur(12px);
+            border-bottom: 2px solid var(--primary); padding: 12px 16px;
+            position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center;
         }
 
-        header h1 { font-size: 17px; color: var(--fpl-green); font-weight: 900; }
-        
-        .hud-stats { display: flex; gap: 8px; }
-        .stat-badge {
-            background: var(--card-glass); border: 1px solid var(--card-border);
-            padding: 4px 10px; border-radius: 8px; font-size: 11px; text-align: center;
-        }
-        .stat-badge span { color: var(--fpl-green); font-weight: bold; }
+        .brand { font-size: 18px; font-weight: 900; color: var(--primary); letter-spacing: 1px; }
 
-        .main-container { max-width: 800px; margin: 0 auto; padding: 12px; }
-        .screen { display: none; }
-        .screen.active { display: block; }
-
-        /* AI Auto Squad Button */
-        .btn-ai {
-            width: 100%; margin-bottom: 12px;
-            background: linear-gradient(135deg, var(--fpl-green), var(--fpl-cyan));
-            color: #000; border: none; padding: 12px; font-weight: 800; font-size: 13px;
-            border-radius: 12px; cursor: pointer;
-            box-shadow: 0 4px 15px rgba(0, 255, 135, 0.3); transition: transform 0.2s;
+        .hud-wrapper { display: flex; gap: 8px; }
+        .hud-item {
+            background: var(--bg-card); border: 1px solid var(--border);
+            padding: 5px 10px; border-radius: 8px; font-size: 11px; text-align: center;
         }
-        .btn-ai:active { transform: scale(0.98); }
+        .hud-item span { color: var(--primary); font-weight: bold; }
 
-        /* Stadium Field */
-        .pitch {
-            background: linear-gradient(180deg, #165b26 0%, #0d3817 100%);
-            border: 2px solid rgba(255,255,255,0.8); border-radius: 16px;
-            padding: 15px 5px; min-height: 470px; display: flex; flex-direction: column;
-            justify-content: space-between; position: relative; overflow: hidden;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        .container { max-width: 800px; margin: 0 auto; padding: 12px; }
+        .page { display: none; }
+        .page.active { display: block; }
+
+        /* Powerful AI Action Button */
+        .btn-ai-v3 {
+            width: 100%; padding: 14px; margin-bottom: 15px; border-radius: 12px; border: none;
+            background: linear-gradient(135deg, #ff0055, #7a00ff); color: #fff;
+            font-size: 14px; font-weight: 900; cursor: pointer;
+            box-shadow: 0 4px 20px rgba(255, 0, 85, 0.4); transition: transform 0.2s;
         }
-        .pitch::before {
-            content: ''; position: absolute; top: 50%; left: 0; right: 0;
-            height: 2px; background: rgba(255,255,255,0.3);
+        .btn-ai-v3:active { transform: scale(0.98); }
+
+        /* Redesigned Modern Pitch */
+        .pitch-container {
+            background: radial-gradient(circle at center, #1b4d24 0%, #08210d 100%);
+            border: 2px solid rgba(255, 255, 255, 0.3); border-radius: 18px;
+            padding: 15px 5px; min-height: 480px; display: flex; flex-direction: column;
+            justify-content: space-between; position: relative; box-shadow: 0 10px 30px rgba(0,0,0,0.8);
         }
 
-        .pitch-row { display: flex; justify-content: center; gap: 6px; z-index: 2; }
-
-        .bench-box {
-            background: rgba(20, 0, 25, 0.9); border: 1px solid var(--card-border);
-            border-radius: 12px; padding: 10px; margin-top: 12px;
+        .pitch-line {
+            position: absolute; top: 50%; left: 0; right: 0; height: 2px;
+            background: rgba(255,255,255,0.2); pointer-events: none;
         }
-        .bench-title { font-size: 11px; color: var(--fpl-cyan); text-align: center; font-weight: bold; margin-bottom: 8px; }
 
-        /* Slot Card */
-        .slot {
-            background: rgba(30, 0, 40, 0.85); border: 1px solid rgba(255,255,255,0.2);
-            border-radius: 10px; width: 20%; max-width: 72px; min-width: 58px; height: 95px;
+        .pitch-row { display: flex; justify-content: center; gap: 6px; z-index: 5; }
+
+        .bench-container {
+            background: rgba(10, 2, 15, 0.95); border: 1px solid var(--border);
+            border-radius: 14px; padding: 12px; margin-top: 15px;
+        }
+        .bench-title { font-size: 12px; color: var(--primary); text-align: center; font-weight: bold; margin-bottom: 10px; }
+
+        /* Player Slots */
+        .slot-card {
+            background: rgba(25, 5, 35, 0.9); border: 1px solid var(--border);
+            border-radius: 10px; width: 20%; max-width: 72px; min-width: 58px; height: 100px;
             display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-            padding: 4px; cursor: pointer; position: relative; backdrop-filter: blur(4px);
+            padding: 5px; cursor: pointer; position: relative; transition: 0.2s;
         }
-        .slot.filled { border-color: var(--fpl-green); background: rgba(55, 0, 60, 0.9); }
-        .slot img { width: 42px; height: 42px; border-radius: 50%; object-fit: cover; background: rgba(255,255,255,0.1); }
-        .slot .p-name { font-size: 8.5px; font-weight: 700; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .slot .p-price { font-size: 8px; color: var(--fpl-green); font-weight: bold; }
+        .slot-card.filled { border-color: var(--primary); background: rgba(10, 25, 40, 0.95); }
+        .slot-card img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: rgba(255,255,255,0.1); }
+        .slot-card .name { font-size: 9px; font-weight: bold; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .slot-card .price { font-size: 8px; color: var(--primary); font-weight: bold; }
 
         .c-badge {
-            position: absolute; top: -4px; right: -4px;
-            background: #ffcc00; color: #000; font-weight: 900; font-size: 9px;
-            width: 18px; height: 18px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; border: 1.5px solid #000;
+            position: absolute; top: -5px; right: -5px; background: #ffcc00; color: #000;
+            font-weight: 900; font-size: 9px; width: 18px; height: 18px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; border: 1px solid #000;
         }
 
-        /* Market Cards */
-        .search-box {
-            width: 100%; padding: 12px; border-radius: 10px;
-            border: 1px solid var(--card-border); background: rgba(255,255,255,0.05);
-            color: #fff; margin-bottom: 10px; font-size: 13px; outline: none;
+        /* Database Market & Filters */
+        .search-bar {
+            width: 100%; padding: 14px; border-radius: 12px; border: 1px solid var(--border);
+            background: rgba(255,255,255,0.06); color: #fff; font-size: 14px; outline: none; margin-bottom: 12px;
         }
-        .search-box:focus { border-color: var(--fpl-green); }
+        .search-bar:focus { border-color: var(--primary); }
 
-        .filter-bar { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; padding-bottom: 4px; }
-        .filter-btn {
-            background: rgba(255,255,255,0.05); color: #ccc; border: 1px solid var(--card-border);
-            padding: 6px 14px; border-radius: 20px; font-size: 11px; cursor: pointer; white-space: nowrap;
+        .filters { display: flex; gap: 8px; overflow-x: auto; padding-bottom: 6px; margin-bottom: 15px; }
+        .f-btn {
+            background: var(--bg-card); color: #aaa; border: 1px solid var(--border);
+            padding: 8px 16px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap;
         }
-        .filter-btn.active { background: var(--fpl-green); color: #000; font-weight: 800; }
+        .f-btn.active { background: var(--primary); color: #000; font-weight: 900; }
 
-        .player-card {
-            background: var(--card-glass); border: 1px solid var(--card-border);
-            border-radius: 10px; padding: 10px 14px; margin-bottom: 8px;
-            display: flex; align-items: center; justify-content: space-between;
+        .market-item {
+            background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px;
+            padding: 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between;
         }
-        .player-card img { width: 42px; height: 42px; border-radius: 50%; background: #fff; }
+        .market-item img { width: 45px; height: 45px; border-radius: 50%; background: #fff; }
+        .market-info { flex: 1; margin: 0 12px; }
+        .market-info h4 { font-size: 14px; color: #fff; }
+        .market-info p { font-size: 11px; color: #aaa; }
 
-        .btn-add {
-            background: var(--fpl-green); color: #000; border: none;
-            padding: 6px 14px; border-radius: 6px; font-weight: 800; cursor: pointer;
+        .add-btn {
+            background: var(--primary); color: #000; border: none; padding: 8px 16px;
+            border-radius: 8px; font-weight: 900; cursor: pointer;
         }
-        .btn-add.added { background: var(--fpl-pink); color: #fff; }
+        .add-btn.remove { background: var(--accent); color: #fff; }
 
-        /* Tips Card */
-        .tip-card {
-            background: var(--card-glass); border: 1px solid var(--card-border);
-            border-right: 4px solid var(--fpl-green); border-radius: 10px;
-            padding: 14px; margin-bottom: 10px; font-size: 12px; line-height: 1.6;
+        /* Navigation Bar */
+        .navbar {
+            position: fixed; bottom: 0; left: 0; right: 0; background: rgba(10, 2, 15, 0.98);
+            border-top: 1px solid var(--border); display: flex; justify-content: space-around;
+            padding: 10px 0; z-index: 2000;
         }
-
-        /* Navigation Bar (Expanded to 5 tabs) */
-        .nav-bar {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(40, 0, 45, 0.95); backdrop-filter: blur(10px);
-            border-top: 1px solid var(--card-border);
-            display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000;
-        }
-        .nav-btn { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 9px; cursor: pointer; }
-        .nav-btn.active { color: var(--fpl-green); font-weight: bold; }
+        .nav-item { display: flex; flex-direction: column; align-items: center; color: #666; font-size: 10px; cursor: pointer; }
+        .nav-item.active { color: var(--primary); font-weight: bold; }
 
         /* Modal */
-        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 3000; align-items: center; justify-content: center; }
-        .modal-box { background: var(--fpl-purple); border: 1px solid var(--fpl-green); border-radius: 14px; padding: 20px; width: 85%; max-width: 300px; text-align: center; }
-        .modal-btn { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
+        .modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.85); z-index: 10000; align-items: center; justify-content: center; }
+        .modal-card { background: #120320; border: 2px solid var(--primary); border-radius: 16px; padding: 20px; width: 85%; max-width: 320px; text-align: center; }
+        .m-btn { width: 100%; padding: 12px; margin: 6px 0; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<!-- Login Screen -->
-<div id="login-overlay">
-    <div class="login-card">
-        <div class="login-logo">⚽</div>
-        <h2 style="color:var(--fpl-green); margin-bottom: 5px; font-size: 18px;">تسجيل الدخول</h2>
-        <p style="font-size: 11px; color:#aaa; margin-bottom: 15px;">ادخل حسابك لمزامنة فريق الفانتزي</p>
-        <input type="email" class="login-input" id="loginEmail" placeholder="البريد الإلكتروني" value="manager@fpl.com">
-        <input type="password" class="login-input" id="loginPass" placeholder="كلمة المرور" value="******">
-        <button class="btn-login" onclick="handleLogin()">دخول الحساب</button>
+<!-- User Auth Screen -->
+<div id="auth-gate">
+    <div class="auth-box">
+        <h2>تسجيل الدخول / حساب جديد</h2>
+        <p>ادخل بياناتك للربط بقاعدة بيانات الفانتازي المباشرة</p>
+        <input type="text" id="usernameInput" class="auth-input" placeholder="اسم المستخدم (Username)">
+        <input type="password" id="passwordInput" class="auth-input" placeholder="كلمة المرور (Password)">
+        <button class="auth-btn" onclick="authenticateUser()">دخول النظام ⚡</button>
     </div>
-</div>
-
-<!-- Splash Screen -->
-<div id="splash-screen">
-    <div class="splash-logo">
-        <div class="splash-logo-inner">🦁</div>
-    </div>
-    <h2 style="margin-top:20px; font-size:18px; color:var(--fpl-green); font-weight:900;">FPL Fantasy</h2>
 </div>
 
 <header>
-    <h1>🦁 FPL FANTASY</h1>
-    <div class="hud-stats">
-        <div class="stat-badge">الميزانية: <span id="budgetText">£100.0m</span></div>
-        <div class="stat-badge">اللاعبين: <span id="countText">0/15</span></div>
+    <div class="brand">⚡ FPL PRO v5</div>
+    <div class="hud-wrapper">
+        <div class="hud-item">الميزانية: <span id="budgetText">£100.0m</span></div>
+        <div class="hud-item">الفرق: <span id="countText">0/15</span></div>
     </div>
 </header>
 
-<div class="main-container">
+<div class="container">
 
-    <!-- Squad Screen -->
-    <div id="squadScreen" class="screen active">
-        <button class="btn-ai" onclick="advancedAiSquad()">🧠 اختيار الذكاء الاصطناعي الخارق (Smart AI v2)</button>
-        <div class="pitch" id="pitchLayout"></div>
-        <div class="bench-box">
-            <div class="bench-title">مقاعد البدلاء (4 لاعبين)</div>
+    <!-- Squad Pitch View -->
+    <div id="squadPage" class="page active">
+        <button class="btn-ai-v3" onclick="runAdvancedAIEngine()">🤖 توليد أحدث تشكيلة بالذكاء الاصطناعي الخارق</button>
+        <div class="pitch-container" id="pitchLayout">
+            <div class="pitch-line"></div>
+        </div>
+        <div class="bench-container">
+            <div class="bench-title">دكة البدلاء (4 لاعبين)</div>
             <div class="pitch-row" id="benchLayout"></div>
         </div>
     </div>
 
-    <!-- Market Screen -->
-    <div id="marketScreen" class="screen">
-        <input type="text" class="search-box" id="searchInput" placeholder="🔍 ابحث باسم اللاعب أو النادي..." oninput="renderMarket()">
-        <div class="filter-bar">
-            <button class="filter-btn active" onclick="setFilter('ALL')">الكل</button>
-            <button class="filter-btn" onclick="setFilter('GKP')">حراس</button>
-            <button class="filter-btn" onclick="setFilter('DEF')">دفاع</button>
-            <button class="filter-btn" onclick="setFilter('MID')">وسط</button>
-            <button class="filter-btn" onclick="setFilter('FWD')">هجوم</button>
+    <!-- Live Market View -->
+    <div id="marketPage" class="page">
+        <input type="text" id="searchInput" class="search-bar" placeholder="🔍 بحث في قاعدة البيانات الرسمية باللاعب أو الفريق..." oninput="renderMarket()">
+        <div class="filters">
+            <button class="f-btn active" onclick="setPosFilter('ALL')">الكل (600+)</button>
+            <button class="f-btn" onclick="setPosFilter('GKP')">حراس (GKP)</button>
+            <button class="f-btn" onclick="setPosFilter('DEF')">دفاع (DEF)</button>
+            <button class="f-btn" onclick="setPosFilter('MID')">وسط (MID)</button>
+            <button class="f-btn" onclick="setPosFilter('FWD')">هجوم (FWD)</button>
         </div>
         <div id="marketList"></div>
     </div>
 
-    <!-- Tips Screen -->
-    <div id="tipsScreen" class="screen">
-        <h3 style="color:var(--fpl-green); margin-bottom:12px;">💡 نصائح الذكاء الاصطناعي للأسبوع</h3>
-        <div class="tip-card">
-            <b style="color:var(--fpl-cyan);">⭐ الكابتن الموصى به:</b><br>
-            الكابتن الأساسي: <b>محمد صلاح</b> أو <b>إرلينج هالاند</b> بناءً على سهولة المواجهات القادمة.
-        </div>
-        <div class="tip-card">
-            <b style="color:var(--fpl-pink);">🔥 خيارات تفاضلية (Differentials):</b><br>
-            لاعبون بنسبة ملكية أقل من 10% متوقع تألقهم في الجولات القادمة لزيادة نقاطك بالدوري.
-        </div>
-        <div class="tip-card">
-            <b style="color:var(--fpl-green);">🛡️ نصيحة الدفاع:</b><br>
-            احرص على شراء أظهرة يشاركون في الهجوم وصناعة الأهداف للحصول على نقاط إضافية بجانب الكلين شيت.
-        </div>
-    </div>
-
-    <!-- League Screen -->
-    <div id="leagueScreen" class="screen">
-        <h3 style="color:var(--fpl-green); margin-bottom:12px;">🏆 دوري الأصدقاء العام</h3>
-        <div class="player-card"><span>1. Ahmed Pro</span><b style="color:var(--fpl-green);">1,450 pt</b></div>
-        <div class="player-card"><span>2. You (فريقك)</span><b style="color:var(--fpl-green);">1,410 pt</b></div>
-        <div class="player-card"><span>3. Omar FPL</span><b style="color:var(--fpl-green);">1,390 pt</b></div>
-        <div class="player-card"><span>4. Gunner King</span><b style="color:var(--fpl-green);">1,350 pt</b></div>
-    </div>
-
-    <!-- Account Screen -->
-    <div id="accountScreen" class="screen">
-        <h3 style="color:var(--fpl-green); margin-bottom:12px;">⚙️ إعدادات الحساب</h3>
-        <div class="tip-card">
-            <b>البريد المسجل:</b> <span id="userEmailDisplay">manager@fpl.com</span><br><br>
-            <button class="btn-login" style="background:var(--fpl-pink); color:#fff;" onclick="logout()">تسجيل الخروج</button>
+    <!-- User Profile Screen -->
+    <div id="userPage" class="page">
+        <div class="bench-container" style="text-align: center;">
+            <h3 style="color:var(--primary); margin-bottom: 10px;">👤 الحساب الشخصي المسجل</h3>
+            <p id="userDisplay" style="margin-bottom: 15px; font-size: 14px; color: #ccc;"></p>
+            <button class="m-btn" style="background:var(--accent); color:#fff;" onclick="logout()">تسجيل الخروج</button>
         </div>
     </div>
 
 </div>
 
-<!-- Player Action Modal -->
-<div class="modal" id="playerModal">
-    <div class="modal-box">
-        <h3 id="modalName" style="color:var(--fpl-green); margin-bottom:12px;"></h3>
-        <button class="modal-btn" style="background:var(--fpl-green); color:#000;" onclick="makeCaptain('C')">تعيين كابتن (C)</button>
-        <button class="modal-btn" style="background:#ddd; color:#000;" onclick="makeCaptain('VC')">تعيين نائب (VC)</button>
-        <button class="modal-btn" style="background:var(--fpl-pink); color:#fff;" onclick="removePlayerFromSquad()">إزالة من الفريق</button>
-        <button class="modal-btn" style="background:#444; color:#fff;" onclick="closeModal()">إغلاق</button>
+<!-- Player Options Modal -->
+<div class="modal-overlay" id="playerModal">
+    <div class="modal-card">
+        <h3 id="modalPlayerName" style="color:var(--primary); margin-bottom:15px;"></h3>
+        <button class="m-btn" style="background:var(--primary); color:#000;" onclick="setCaptain('C')">تعيين كابتن (C)</button>
+        <button class="m-btn" style="background:#ddd; color:#000;" onclick="setCaptain('VC')">تعيين نائب كابتن (VC)</button>
+        <button class="m-btn" style="background:var(--accent); color:#fff;" onclick="removeFromSquad()">إزالة اللاعب</button>
+        <button class="m-btn" style="background:#333; color:#fff;" onclick="closeModal()">إغلاق</button>
     </div>
 </div>
 
-<nav class="nav-bar">
-    <div class="nav-btn active" id="btnNavSquad" onclick="tab('squad')">
-        <div style="font-size:16px;">🏟️</div>
-        <span>الملعب</span>
+<nav class="navbar">
+    <div class="nav-item active" id="btnSquad" onclick="switchPage('squad')">
+        <div style="font-size:18px;">🏟️</div>
+        <span>التشكيلة</span>
     </div>
-    <div class="nav-btn" id="btnNavMarket" onclick="tab('market')">
-        <div style="font-size:16px;">🏃</div>
-        <span>الانتقالات</span>
+    <div class="nav-item" id="btnMarket" onclick="switchPage('market')">
+        <div style="font-size:18px;">🔍</div>
+        <span>الانتقالات المباشرة</span>
     </div>
-    <div class="nav-btn" id="btnNavTips" onclick="tab('tips')">
-        <div style="font-size:16px;">💡</div>
-        <span>نصائح</span>
-    </div>
-    <div class="nav-btn" id="btnNavLeague" onclick="tab('league')">
-        <div style="font-size:16px;">🏆</div>
-        <span>الدوري</span>
-    </div>
-    <div class="nav-btn" id="btnNavAccount" onclick="tab('account')">
-        <div style="font-size:16px;">⚙️</div>
+    <div class="nav-item" id="btnUser" onclick="switchPage('user')">
+        <div style="font-size:18px;">⚙️</div>
         <span>حسابي</span>
     </div>
 </nav>
 
 <script>
-    let db = [];
-    let squad = [];
-    let budget = 100.0;
-    let filterPos = 'ALL';
-    let activePlayerId = null;
-    let capId = null;
-    let vcId = null;
+    let rawDatabase = [];
+    let activeSquad = [];
+    let remainingBudget = 100.0;
+    let currentPosFilter = 'ALL';
+    let selectedPlayerId = null;
+    let captainId = null;
+    let viceCaptainId = null;
 
     const pitchFormation = [
         { pos: 'GKP', count: 1 },
@@ -354,190 +261,198 @@
         { pos: 'FWD', count: 2 }
     ];
 
-    const logoFallback = "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg";
+    const fallbackImage = "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg";
 
     window.addEventListener('DOMContentLoaded', () => {
-        if(localStorage.getItem('fpl_logged_in') === 'true') {
-            document.getElementById('login-overlay').style.display = 'none';
-            fetchFPLDataFast();
+        const currentUser = localStorage.getItem('fpl_v5_user');
+        if (currentUser) {
+            document.getElementById('auth-gate').style.display = 'none';
+            document.getElementById('userDisplay').innerText = `المستخدم: ${currentUser}`;
+            loadCompleteDatabase();
         }
     });
 
-    function handleLogin() {
-        const mail = document.getElementById('loginEmail').value;
-        if(!mail) return alert('برجاء كتابة البريد');
-        localStorage.setItem('fpl_logged_in', 'true');
-        document.getElementById('userEmailDisplay').innerText = mail;
-        document.getElementById('login-overlay').style.display = 'none';
-        fetchFPLDataFast();
+    function authenticateUser() {
+        const u = document.getElementById('usernameInput').value.trim();
+        const p = document.getElementById('passwordInput').value.trim();
+        if (!u || !p) return alert('برجاء كتابة اسم المستخدم وكلمة المرور!');
+
+        localStorage.setItem('fpl_v5_user', u);
+        document.getElementById('userDisplay').innerText = `المستخدم: ${u}`;
+        document.getElementById('auth-gate').style.display = 'none';
+        loadCompleteDatabase();
     }
 
     function logout() {
-        localStorage.removeItem('fpl_logged_in');
+        localStorage.removeItem('fpl_v5_user');
         location.reload();
     }
 
-    async function fetchFPLDataFast() {
+    // Direct fetch for 100% of players from FPL Official API
+    async function loadCompleteDatabase() {
         const target = 'https://fantasy.premierleague.com/api/bootstrap-static/';
-        const servers = [
+        const proxies = [
             `https://corsproxy.io/?${encodeURIComponent(target)}`,
             `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`
         ];
 
-        for (let server of servers) {
+        for (let p of proxies) {
             try {
-                const res = await fetch(server);
+                const res = await fetch(p);
                 if (res.ok) {
                     const data = await res.json();
-                    if (data && data.elements) {
-                        parseData(data);
-                        hideSplash();
+                    if (data && data.elements && data.elements.length > 0) {
+                        parseFullDatabase(data);
                         return;
                     }
                 }
             } catch (e) {
-                console.warn('Trying next server...');
+                console.warn('Proxy retry...');
             }
         }
+        alert('حدث خطأ في جلب قاعدة البيانات المباشرة. يرجى إعادة المحاولة.');
     }
 
-    function parseData(data) {
-        let teams = {};
-        data.teams.forEach(t => teams[t.id] = t.name);
-        const posNames = { 1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD' };
+    function parseFullDatabase(data) {
+        let teamMapping = {};
+        data.teams.forEach(t => teamMapping[t.id] = t.name);
+        const positionMapping = { 1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD' };
 
-        db = data.elements.map(p => ({
-            id: p.id,
-            name: p.web_name,
-            club: teams[p.team] || 'EPL',
-            pos: posNames[p.element_type],
-            price: p.now_cost / 10,
-            pts: p.total_points,
-            ppm: p.total_points / (p.now_cost / 10 || 1), // Points per million for AI
-            img: `https://resources.premierleague.com/premierleague/photos/players/250x250/p${p.code}.png`
+        rawDatabase = data.elements.map(item => ({
+            id: item.id,
+            name: item.web_name,
+            fullName: `${item.first_name} ${item.second_name}`,
+            club: teamMapping[item.team] || 'EPL Club',
+            pos: positionMapping[item.element_type],
+            price: item.now_cost / 10,
+            pts: item.total_points,
+            xMetric: (item.total_points * 0.6) + ((item.now_cost / 10) * 0.4), // Advanced algorithm metric
+            img: `https://resources.premierleague.com/premierleague/photos/players/250x250/p${item.code}.png`
         }));
 
         renderPitch();
         renderMarket();
     }
 
-    function hideSplash() {
-        const splash = document.getElementById('splash-screen');
-        splash.style.opacity = '0';
-        setTimeout(() => splash.style.display = 'none', 500);
-    }
+    function switchPage(pageName) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
 
-    function tab(name) {
-        document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-bar .nav-btn').forEach(b => b.classList.remove('active'));
-
-        const targetScreen = document.getElementById(name + 'Screen');
-        const targetBtn = document.getElementById('btnNav' + name.charAt(0).toUpperCase() + name.slice(1));
-        if(targetScreen) targetScreen.classList.add('active');
-        if(targetBtn) targetBtn.classList.add('active');
+        document.getElementById(pageName + 'Page').classList.add('active');
+        const btnId = 'btn' + pageName.charAt(0).toUpperCase() + pageName.slice(1);
+        document.getElementById(btnId).classList.add('active');
     }
 
     function renderPitch() {
         const pitch = document.getElementById('pitchLayout');
         const bench = document.getElementById('benchLayout');
-        pitch.innerHTML = ''; bench.innerHTML = '';
+        pitch.innerHTML = '<div class="pitch-line"></div>';
+        bench.innerHTML = '';
 
-        let mainStarters = squad.slice(0, 11);
+        let starters = activeSquad.slice(0, 11);
         pitchFormation.forEach(group => {
             const row = document.createElement('div');
             row.className = 'pitch-row';
-            const posStarters = mainStarters.filter(p => p.pos === group.pos);
+            const positionStarters = starters.filter(x => x.pos === group.pos);
 
-            for(let i = 0; i < group.count; i++) {
-                row.appendChild(createSlotCard(posStarters[i], group.pos));
+            for (let i = 0; i < group.count; i++) {
+                row.appendChild(createSlotElement(positionStarters[i], group.pos));
             }
             pitch.appendChild(row);
         });
 
-        let benchPlayers = squad.slice(11, 15);
-        const benchPos = ['GKP', 'DEF', 'MID', 'FWD'];
-        for(let i = 0; i < 4; i++) {
-            bench.appendChild(createSlotCard(benchPlayers[i], benchPos[i]));
+        let benchSquad = activeSquad.slice(11, 15);
+        const benchPositions = ['GKP', 'DEF', 'MID', 'FWD'];
+        for (let i = 0; i < 4; i++) {
+            bench.appendChild(createSlotElement(benchSquad[i], benchPositions[i]));
         }
     }
 
-    function createSlotCard(p, pos) {
+    function createSlotElement(player, pos) {
         const card = document.createElement('div');
-        if(p) {
-            const isC = p.id === capId;
-            const isVc = p.id === vcId;
-            card.className = 'slot filled';
+        if (player) {
+            const isCap = player.id === captainId;
+            const isVc = player.id === viceCaptainId;
+            card.className = 'slot-card filled';
             card.innerHTML = `
-                ${isC ? '<div class="c-badge">C</div>' : ''}
-                ${isVc ? '<div class="c-badge" style="background:#ccc">V</div>' : ''}
-                <img src="${p.img}" onerror="this.src='${logoFallback}'">
-                <span class="p-name">${p.name}</span>
-                <span class="p-price">£${p.price.toFixed(1)}m</span>
+                ${isCap ? '<div class="c-badge">C</div>' : ''}
+                ${isVc ? '<div class="c-badge" style="background:#aaa">V</div>' : ''}
+                <img src="${player.img}" onerror="this.src='${fallbackImage}'">
+                <span class="name">${player.name}</span>
+                <span class="price">£${player.price.toFixed(1)}m</span>
             `;
-            card.onclick = () => openModal(p.id);
+            card.onclick = () => openModal(player.id);
         } else {
-            card.className = 'slot';
-            card.innerHTML = `<span style="font-size:20px; color:var(--fpl-green)">+</span><span style="font-size:9px; color:#aaa">${pos}</span>`;
-            card.onclick = () => { setFilter(pos); tab('market'); };
+            card.className = 'slot-card';
+            card.innerHTML = `<span style="font-size:22px; color:var(--primary)">+</span><span style="font-size:9px; color:#888">${pos}</span>`;
+            card.onclick = () => { setPosFilter(pos); switchPage('market'); };
         }
         return card;
     }
 
-    /* Advanced AI Selection V2 */
-    function advancedAiSquad() {
-        if(!db.length) return;
-        squad = []; budget = 100.0; capId = null; vcId = null;
-        const limits = { 'GKP': 2, 'DEF': 5, 'MID': 5, 'FWD': 3 };
-        const counts = { 'GKP': 0, 'DEF': 0, 'MID': 0, 'FWD': 0 };
+    /* AI Pro Optimization Algorithm */
+    function runAdvancedAIEngine() {
+        if (!rawDatabase.length) return alert('جاري تحضير قاعدة البيانات المباشرة، انتظر ثواني...');
+        activeSquad = []; remainingBudget = 100.0; captainId = null; viceCaptainId = null;
 
-        // Advanced AI heuristic: High Points + High Value Ratio
-        let sorted = [...db].sort((a,b) => (b.pts * 0.7 + b.ppm * 0.3) - (a.pts * 0.7 + a.ppm * 0.3));
+        const maxLimits = { 'GKP': 2, 'DEF': 5, 'MID': 5, 'FWD': 3 };
+        const currentCounts = { 'GKP': 0, 'DEF': 0, 'MID': 0, 'FWD': 0 };
 
-        for(let p of sorted) {
-            if(squad.length >= 15) break;
-            let clubCnt = squad.filter(x => x.club === p.club).length;
-            if(counts[p.pos] < limits[p.pos] && clubCnt < 3 && budget >= p.price) {
-                if((15 - squad.length - 1) === 0 || (budget - p.price) >= ((14 - squad.length) * 4.0)) {
-                    squad.push(p);
-                    counts[p.pos]++;
-                    budget -= p.price;
+        let sortedList = [...rawDatabase].sort((a, b) => b.xMetric - a.xMetric);
+
+        for (let player of sortedList) {
+            if (activeSquad.length >= 15) break;
+
+            let clubCount = activeSquad.filter(p => p.club === player.club).length;
+            if (currentCounts[player.pos] < maxLimits[player.pos] && clubCount < 3 && remainingBudget >= player.price) {
+                if ((15 - activeSquad.length - 1) === 0 || (remainingBudget - player.price) >= ((14 - activeSquad.length) * 4.0)) {
+                    activeSquad.push(player);
+                    currentCounts[player.pos]++;
+                    remainingBudget -= player.price;
                 }
             }
         }
-        if(squad.length > 0) capId = squad[0].id;
-        if(squad.length > 1) vcId = squad[1].id;
-        updateHud(); renderPitch();
+
+        if (activeSquad.length > 0) captainId = activeSquad[0].id;
+        if (activeSquad.length > 1) viceCaptainId = activeSquad[1].id;
+
+        updateHUD();
+        renderPitch();
     }
 
-    function togglePlayer(id) {
-        const p = db.find(x => x.id === id);
-        if(!p) return;
-        const idx = squad.findIndex(x => x.id === id);
+    function togglePlayerSelection(id) {
+        const player = rawDatabase.find(x => x.id === id);
+        if (!player) return;
 
-        if(idx > -1) {
-            budget += squad[idx].price;
-            if(capId === id) capId = null;
-            if(vcId === id) vcId = null;
-            squad.splice(idx, 1);
+        const index = activeSquad.findIndex(x => x.id === id);
+        if (index > -1) {
+            remainingBudget += activeSquad[index].price;
+            if (captainId === id) captainId = null;
+            if (viceCaptainId === id) viceCaptainId = null;
+            activeSquad.splice(index, 1);
         } else {
-            if(squad.length >= 15) return alert('التشكيلة مكتملة!');
-            if(budget < p.price) return alert('الميزانية لا تكفي!');
-            if(squad.filter(x => x.club === p.club).length >= 3) return alert('الحد الأقصى 3 لاعبين من نفس الفريق!');
-            squad.push(p);
-            budget -= p.price;
+            if (activeSquad.length >= 15) return alert('التشكيلة مكتملة بـ 15 لاعباً!');
+            if (remainingBudget < player.price) return alert('الميزانية لا تكفي للشراء!');
+            if (activeSquad.filter(x => x.club === player.club).length >= 3) return alert('وصلت للحد الأقصى (3 لاعبين من نفس الفريق)!');
+
+            activeSquad.push(player);
+            remainingBudget -= player.price;
         }
-        updateHud(); renderPitch(); renderMarket();
+
+        updateHUD();
+        renderPitch();
+        renderMarket();
     }
 
-    function updateHud() {
-        document.getElementById('budgetText').innerText = '£' + budget.toFixed(1) + 'm';
-        document.getElementById('countText').innerText = squad.length + '/15';
+    function updateHUD() {
+        document.getElementById('budgetText').innerText = '£' + remainingBudget.toFixed(1) + 'm';
+        document.getElementById('countText').innerText = activeSquad.length + '/15';
     }
 
-    function setFilter(pos) {
-        filterPos = pos;
-        document.querySelectorAll('.filter-btn').forEach(b => {
-            b.classList.toggle('active', b.innerText.includes(pos) || (pos === 'ALL' && b.innerText === 'الكل'));
+    function setPosFilter(pos) {
+        currentPosFilter = pos;
+        document.querySelectorAll('.f-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.innerText.includes(pos) || (pos === 'ALL' && btn.innerText.includes('الكل')));
         });
         renderMarket();
     }
@@ -545,54 +460,55 @@
     function renderMarket() {
         const query = document.getElementById('searchInput').value.toLowerCase();
         const container = document.getElementById('marketList');
-        if(!container) return;
+        if (!container) return;
         container.innerHTML = '';
 
-        const list = db.filter(p => {
-            const mQ = p.name.toLowerCase().includes(query) || p.club.toLowerCase().includes(query);
-            const mP = filterPos === 'ALL' || p.pos === filterPos;
-            return mQ && mP;
+        const filtered = rawDatabase.filter(item => {
+            const matchesQuery = item.name.toLowerCase().includes(query) || item.club.toLowerCase().includes(query) || item.fullName.toLowerCase().includes(query);
+            const matchesPos = currentPosFilter === 'ALL' || item.pos === currentPosFilter;
+            return matchesQuery && matchesPos;
         });
 
-        list.slice(0, 50).forEach(p => {
-            const inS = squad.some(x => x.id === p.id);
-            const card = document.createElement('div');
-            card.className = 'player-card';
-            card.innerHTML = `
-                <div style="display:flex; align-items:center; gap:10px;">
-                    <img src="${p.img}" onerror="this.src='${logoFallback}'">
-                    <div>
-                        <div style="font-weight:bold; font-size:13px;">${p.name}</div>
-                        <small style="color:#aaa;">${p.club} | <b style="color:var(--fpl-green);">${p.pos}</b></small>
-                    </div>
+        // Display up to 100 live results seamlessly
+        filtered.slice(0, 100).forEach(player => {
+            const isAdded = activeSquad.some(x => x.id === player.id);
+            const div = document.createElement('div');
+            div.className = 'market-item';
+            div.innerHTML = `
+                <img src="${player.img}" onerror="this.src='${fallbackImage}'">
+                <div class="market-info">
+                    <h4>${player.name}</h4>
+                    <p>${player.club} | <b style="color:var(--primary);">${player.pos}</b> | النقاط: ${player.pts}</p>
                 </div>
                 <div>
-                    <span style="font-weight:bold; font-size:12px; margin-left:8px;">£${p.price.toFixed(1)}m</span>
-                    <button class="btn-add ${inS ? 'added' : ''}" onclick="togglePlayer(${p.id})">${inS ? 'إزالة' : '+'}</button>
+                    <span style="font-weight:bold; font-size:13px; margin-left:8px;">£${player.price.toFixed(1)}m</span>
+                    <button class="add-btn ${isAdded ? 'remove' : ''}" onclick="togglePlayerSelection(${player.id})">${isAdded ? 'إزالة' : '+'}</button>
                 </div>
             `;
-            container.appendChild(card);
+            container.appendChild(div);
         });
     }
 
     function openModal(id) {
-        activePlayerId = id;
-        const p = squad.find(x => x.id === id);
-        if(!p) return;
-        document.getElementById('modalName').innerText = p.name;
+        selectedPlayerId = id;
+        const p = activeSquad.find(x => x.id === id);
+        if (!p) return;
+        document.getElementById('modalPlayerName').innerText = p.name;
         document.getElementById('playerModal').style.display = 'flex';
     }
 
     function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
 
-    function makeCaptain(type) {
-        if(type === 'C') { capId = activePlayerId; if(vcId === activePlayerId) vcId = null; }
-        else { vcId = activePlayerId; if(capId === activePlayerId) capId = null; }
-        closeModal(); renderPitch();
+    function setCaptain(type) {
+        if (type === 'C') { captainId = selectedPlayerId; if (viceCaptainId === selectedPlayerId) viceCaptainId = null; }
+        else { viceCaptainId = selectedPlayerId; if (captainId === selectedPlayerId) captainId = null; }
+        closeModal();
+        renderPitch();
     }
 
-    function removePlayerFromSquad() {
-        togglePlayer(activePlayerId); closeModal();
+    function removeFromSquad() {
+        togglePlayerSelection(selectedPlayerId);
+        closeModal();
     }
 </script>
 </body>
