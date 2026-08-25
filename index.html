@@ -154,7 +154,7 @@
         .bottom-nav {
             position: fixed; bottom: 0; left: 0; right: 0;
             background: var(--fpl-purple); border-top: 2px solid var(--fpl-green);
-            display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000;
+            display: flex; justify-around; padding: 8px 0; z-index: 1000;
         }
         .nav-item { display: flex; flex-direction: column; align-items: center; color: #aaa; font-size: 11px; cursor: pointer; }
         .nav-item.active { color: var(--fpl-green); font-weight: bold; }
@@ -290,14 +290,29 @@
     });
 
     async function loadOfficialFPLData() {
-        const proxyUrl = 'https://api.allorigins.win/get?url=';
-        const targetUrl = encodeURIComponent('https://fantasy.premierleague.com/api/bootstrap-static/');
+        const targetUrl = 'https://fantasy.premierleague.com/api/bootstrap-static/';
         
-        try {
-            const res = await fetch(proxyUrl + targetUrl);
-            const rawData = await res.json();
-            const data = JSON.parse(rawData.contents);
-            
+        // سيرفرات بروكسي متعددة كخط حماية ضد التوقف
+        const proxies = [
+            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
+        ];
+
+        let data = null;
+
+        for (let url of proxies) {
+            try {
+                const res = await fetch(url);
+                if (res.ok) {
+                    data = await res.json();
+                    if (data && data.elements) break;
+                }
+            } catch (e) {
+                console.warn('Proxy failed, trying fallback...', url);
+            }
+        }
+
+        if (data && data.elements) {
             let teamsMap = {};
             data.teams.forEach(t => teamsMap[t.id] = t.name);
 
@@ -316,9 +331,8 @@
             document.getElementById('loader').style.display = 'none';
             renderPitchAndBench();
             filterPlayers();
-        } catch(e) {
-            console.error(e);
-            document.getElementById('loaderStatus').innerText = "حدث خطأ في جلب البيانات، جارٍ المحاولة مرة أخرى...";
+        } else {
+            document.getElementById('loaderStatus').innerText = "جاري إعادة الاتصال بسيرفر الفانتازي المباشر...";
             setTimeout(loadOfficialFPLData, 2000);
         }
     }
@@ -566,3 +580,4 @@
 
 </body>
 </html>
+
