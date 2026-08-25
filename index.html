@@ -2,223 +2,554 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FPL Ultimate League Engine</title>
-    <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@500;700;900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FPL Official App Experience 2026/27 - Full API Edition</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --fpl-purple: #37003c;
             --fpl-green: #00ff87;
             --fpl-pink: #e90052;
-            --bg-dark: #0f0015;
-            --card-bg: #1f0027;
-            --border: rgba(255, 255, 255, 0.1);
+            --bg-dark: #12001a;
+            --card-bg: #22002a;
+            --fdr-easy: #00ff87;
+            --fdr-medium: #e1e1e1;
+            --fdr-hard: #ff1744;
         }
-        * { box-sizing: border-box; font-family: 'Tajawal', sans-serif; }
-        body { background-color: var(--bg-dark); color: #ffffff; margin: 0; padding-bottom: 70px; }
-        .app-container { max-width: 1200px; margin: 0 auto; padding: 15px; }
-        
+
+        * {
+            box-sizing: border-box;
+            user-select: none;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            margin: 0;
+            padding-bottom: 75px;
+        }
+
+        /* Loading Screen */
+        #loader {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: var(--bg-dark);
+            z-index: 3000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--fpl-green);
+            font-weight: bold;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(255,255,255,0.1);
+            border-top: 5px solid var(--fpl-green);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 15px;
+        }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Top Header */
         header {
-            background: var(--fpl-purple); border-bottom: 3px solid var(--fpl-green);
-            padding: 15px 20px; position: sticky; top: 0; z-index: 1000;
-            display: flex; justify-content: space-between; align-items: center; border-radius: 0 0 12px 12px;
-        }
-        header h1 { margin: 0; font-size: 18px; color: var(--fpl-green); }
-        .hud-stats { display: flex; gap: 10px; }
-        .stat-badge { background: rgba(0,0,0,0.4); padding: 5px 12px; border-radius: 8px; font-size: 13px; border: 1px solid var(--border); }
-        .stat-badge span { color: var(--fpl-green); font-weight: bold; }
-
-        .main-layout { display: grid; grid-template-columns: 1fr; gap: 20px; margin-top: 15px; }
-        @media (min-width: 900px) {
-            .main-layout { grid-template-columns: 1fr 1fr; }
-            .bottom-nav { display: none !important; }
-            body { padding-bottom: 0; }
-            .screen { display: block !important; }
-        }
-        @media (max-width: 899px) {
-            .screen { display: none; }
-            .screen.active { display: block; }
+            background: var(--fpl-purple);
+            border-bottom: 3px solid var(--fpl-green);
+            padding: 10px 15px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
-        .pitch {
-            background: #00753a;
-            background-image: repeating-linear-gradient(0deg, #00753a, #00753a 40px, #008241 40px, #008241 80px);
-            border: 3px solid #ffffff; border-radius: 15px; padding: 15px 5px; min-height: 500px;
-            display: flex; flex-direction: column; justify-content: space-around;
+        header h1 {
+            margin: 0;
+            font-size: 16px;
+            color: var(--fpl-green);
+            font-weight: 900;
         }
-        .pitch-row { display: flex; justify-content: center; gap: 8px; }
-        .slot {
-            background: rgba(55, 0, 60, 0.85); border: 2px dashed rgba(255,255,255,0.3);
-            border-radius: 8px; width: 70px; height: 90px; display: flex;
-            flex-direction: column; align-items: center; justify-content: center; position: relative;
+
+        .hud-stats {
+            display: flex;
+            gap: 8px;
         }
-        .slot.filled { border: 2px solid var(--fpl-green); background: var(--fpl-purple); }
-        .slot .name { font-size: 9px; font-weight: bold; margin-top: 3px; max-width: 65px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; text-align: center; }
-        .slot .price { font-size: 8px; color: var(--fpl-green); }
-        .remove-btn { position: absolute; top: -5px; left: -5px; background: var(--fpl-pink); color: #fff; border: none; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; cursor: pointer; }
 
-        .market-panel { background: var(--card-bg); border-radius: 12px; padding: 15px; border: 1px solid var(--border); }
-        .search-box { width: 100%; padding: 12px; border-radius: 8px; border: 1px solid #4a0052; background: #120019; color: #fff; margin-bottom: 10px; }
-        
-        .filters-scroll { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 8px; margin-bottom: 10px; }
-        .f-btn { background: #2a0038; color: #ccc; border: 1px solid #4a0052; padding: 6px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; white-space: nowrap; }
-        .f-btn.active { background: var(--fpl-green); color: #000; font-weight: bold; }
+        .stat-badge {
+            background: rgba(255,255,255,0.1);
+            padding: 4px 8px;
+            border-radius: 6px;
+            text-align: center;
+            font-size: 11px;
+        }
 
-        .players-scroll { max-height: 500px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .player-card { background: #14001c; border-radius: 8px; padding: 10px 12px; display: flex; justify-content: space-between; align-items: center; border: 1px solid var(--border); }
-        .p-details bold { font-size: 13px; display: block; }
-        .p-details small { font-size: 11px; color: #aaa; }
-        .add-btn { background: var(--fpl-green); color: #000; border: none; padding: 6px 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
-        .add-btn.in-squad { background: var(--fpl-pink); color: #fff; }
+        .stat-badge span {
+            color: var(--fpl-green);
+            font-weight: bold;
+        }
 
-        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--fpl-purple); border-top: 2px solid var(--fpl-green); display: flex; justify-content: space-around; padding: 8px 0; z-index: 1000; }
-        .nav-tab { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 11px; cursor: pointer; }
-        .nav-tab.active { color: var(--fpl-green); font-weight: bold; }
+        /* Layout */
+        .main-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 10px;
+        }
+
+        .screen { display: none; }
+        .screen.active { display: block; }
+
+        /* Tips Bar */
+        .tips-bar {
+            background: linear-gradient(90deg, #22002a, #37003c);
+            border: 1px solid var(--fpl-green);
+            border-radius: 8px;
+            padding: 10px;
+            margin-bottom: 12px;
+            font-size: 12px;
+        }
+
+        /* AI Action Bar */
+        .ai-bar {
+            background: var(--card-bg);
+            padding: 10px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .btn-ai {
+            background: linear-gradient(45deg, #00ff87, #00b0ff);
+            color: #000;
+            border: none;
+            padding: 8px 14px;
+            font-weight: bold;
+            font-size: 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* Responsive Pitch Layout */
+        .pitch-container {
+            background: #008040;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.1) 2px, transparent 2px), 
+                linear-gradient(90deg, rgba(255,255,255,0.1) 2px, transparent 2px);
+            background-size: 100% 25%, 20% 100%;
+            border: 3px solid #ffffff;
+            border-radius: 12px;
+            padding: 12px 5px;
+            min-height: 520px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+        }
+
+        .pitch-row {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin: 4px 0;
+        }
+
+        .slot-card {
+            background: rgba(55, 0, 60, 0.9);
+            border: 2px dashed rgba(255,255,255,0.4);
+            border-radius: 8px;
+            width: calc(20% - 6px);
+            max-width: 80px;
+            min-width: 58px;
+            height: 95px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 4px 2px;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .slot-card.filled {
+            border: 2px solid var(--fpl-green);
+            background: var(--fpl-purple);
+        }
+
+        .slot-card img {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #fff;
+        }
+
+        .slot-card .p-name {
+            font-size: 9px;
+            font-weight: bold;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            text-align: center;
+        }
+
+        .slot-card .p-price {
+            font-size: 8.5px;
+            color: var(--fpl-green);
+        }
+
+        .captain-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #ffcc00;
+            color: #000;
+            font-weight: 900;
+            font-size: 10px;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid #000;
+        }
+
+        /* FDR Color Utilities */
+        .bg-easy { background-color: var(--fdr-easy) !important; color: #000 !important; }
+        .bg-medium { background-color: var(--fdr-medium) !important; color: #000 !important; }
+        .bg-hard { background-color: var(--fdr-hard) !important; color: #fff !important; }
+
+        /* Transfer Market Screen */
+        .search-box {
+            width: 100%;
+            padding: 10px;
+            border-radius: 6px;
+            border: 1px solid #4a0052;
+            background: #190022;
+            color: #fff;
+            margin-bottom: 10px;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 6px;
+            margin-bottom: 10px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+            white-space: nowrap;
+        }
+
+        .filter-btn {
+            background: #280033;
+            color: #ccc;
+            border: 1px solid #4a0052;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .filter-btn.active {
+            background: var(--fpl-green);
+            color: #000;
+            font-weight: bold;
+        }
+
+        .club-counters {
+            display: flex;
+            gap: 6px;
+            overflow-x: auto;
+            background: rgba(0,0,0,0.3);
+            padding: 6px;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            font-size: 10px;
+        }
+
+        .club-tag {
+            background: #22002a;
+            padding: 3px 6px;
+            border-radius: 4px;
+            border: 1px solid #4a0052;
+        }
+
+        .club-tag.limit-reached {
+            border-color: var(--fpl-pink);
+            color: var(--fpl-pink);
+        }
+
+        .players-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .player-row-item {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 8px 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid #3d004c;
+        }
+
+        .p-info-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .p-info-left img {
+            width: 42px;
+            height: 42px;
+            border-radius: 50%;
+            background: #fff;
+        }
+
+        .p-details div { font-size: 13px; font-weight: bold; }
+        .p-details small { color: #aaa; font-size: 11px; }
+
+        .btn-add-p {
+            background: var(--fpl-green);
+            color: #000;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .btn-add-p.in-squad {
+            background: var(--fpl-pink);
+            color: #fff;
+        }
+
+        /* Navigation Bar */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--fpl-purple);
+            border-top: 2px solid var(--fpl-green);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 0;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            color: #aaa;
+            font-size: 11px;
+            cursor: pointer;
+        }
+
+        .nav-item.active {
+            color: var(--fpl-green);
+            font-weight: bold;
+        }
+
+        /* Action Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background: var(--card-bg);
+            border: 2px solid var(--fpl-green);
+            border-radius: 12px;
+            padding: 20px;
+            width: 85%;
+            max-width: 320px;
+            text-align: center;
+        }
+
+        .modal-btn {
+            width: 100%;
+            padding: 10px;
+            margin: 6px 0;
+            border-radius: 6px;
+            border: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
 
+<!-- Loader while fetching Premier League Live Data -->
+<div id="loader">
+    <div class="spinner"></div>
+    <span>جاري جلب قاعدة البيانات الرسمية بجميع اللاعبين من FPL...</span>
+</div>
+
 <header>
-    <h1>⚡ الفانتازي - الشاملة</h1>
+    <h1>⚽ FPL Official Live 2026</h1>
     <div class="hud-stats">
-        <div class="stat-badge">الميزانية: <span id="budget">£100.0m</span></div>
-        <div class="stat-badge">اللاعيبة: <span id="count">0/15</span></div>
+        <div class="stat-badge">الميزانية: <span id="budgetDisplay">£100.0m</span></div>
+        <div class="stat-badge">اللاعبين: <span id="countDisplay">0/15</span></div>
     </div>
 </header>
 
-<div class="app-container">
-    <div class="main-layout">
-        <div id="squadScreen" class="screen active">
-            <div class="pitch" id="pitch"></div>
+<div class="main-container">
+
+    <div id="squadScreen" class="screen active">
+        <div class="tips-bar">
+            <span>💡 <b>تم الاتصال بالسيرفر الرسمي:</b> تمت جلب كافة اللاعبين الرسميين للدوري الإنجليزي بالكامل.</span>
         </div>
 
-        <div id="marketScreen" class="screen">
-            <div class="market-panel">
-                <input type="text" class="search-box" id="search" placeholder="🔍 ابحث عن أي لاعب أو نادٍ..." oninput="filterData()">
-                
-                <div class="filters-scroll" id="posFilters">
-                    <button class="f-btn active" onclick="setPos('ALL')">كل المراكز</button>
-                    <button class="f-btn" onclick="setPos('GKP')">حراس (GKP)</button>
-                    <button class="f-btn" onclick="setPos('DEF')">دفاع (DEF)</button>
-                    <button class="f-btn" onclick="setPos('MID')">وسط (MID)</button>
-                    <button class="f-btn" onclick="setPos('FWD')">هجوم (FWD)</button>
-                </div>
-
-                <div class="filters-scroll" id="clubFilters"></div>
-
-                <div class="players-scroll" id="playersList"></div>
-            </div>
+        <div class="ai-bar">
+            <span style="font-size: 12px;">تشكيلة الذكاء الاصطناعي:</span>
+            <button class="btn-ai" onclick="generateAISquad()">🤖 بناء تشكيلة خبيرة</button>
         </div>
+
+        <div class="pitch-container" id="pitchContainer"></div>
+    </div>
+
+    <div id="marketScreen" class="screen">
+        <input type="text" class="search-box" id="searchInput" placeholder="🔍 ابحث بين 600+ لاعب..." oninput="filterPlayers()">
+        
+        <div class="club-counters" id="clubCounters"></div>
+
+        <div class="filter-bar" id="positionFilters">
+            <button class="filter-btn active" onclick="setPosFilter('ALL')">الكل</button>
+            <button class="filter-btn" onclick="setPosFilter('GKP')">حراس (GKP)</button>
+            <button class="filter-btn" onclick="setPosFilter('DEF')">دفاع (DEF)</button>
+            <button class="filter-btn" onclick="setPosFilter('MID')">وسط (MID)</button>
+            <button class="filter-btn" onclick="setPosFilter('FWD')">هجوم (FWD)</button>
+        </div>
+
+        <div class="filter-bar" id="clubFilters"></div>
+
+        <div class="players-list" id="playersListContainer"></div>
+    </div>
+
+</div>
+
+<!-- Player Action Modal -->
+<div class="modal" id="playerModal">
+    <div class="modal-content">
+        <h3 id="modalPlayerName" style="margin-top:0; color:var(--fpl-green);">اسم اللاعب</h3>
+        <button class="modal-btn bg-easy" onclick="setCaptain('C')">تعيين كابتن (C)</button>
+        <button class="modal-btn bg-medium" onclick="setCaptain('VC')">تعيين نائب كابتن (VC)</button>
+        <button class="modal-btn bg-hard" onclick="removeSelectedPlayer()">إزالة من التشكيلة ✕</button>
+        <button class="modal-btn" style="background:#555; color:#fff;" onclick="closeModal()">إلغاء</button>
     </div>
 </div>
 
 <nav class="bottom-nav">
-    <div class="nav-tab active" id="tabSquad" onclick="switchTab('squad')">
-        <div style="font-size: 18px;">🏟️</div>
+    <div class="nav-item active" id="navSquad" onclick="switchScreen('squad')">
+        <div style="font-size: 16px;">🏟️</div>
         <span>التشكيلة</span>
     </div>
-    <div class="nav-tab" id="tabMarket" onclick="switchTab('market')">
-        <div style="font-size: 18px;">🏃</div>
-        <span>اللاعبين</span>
+    <div class="nav-item" id="navMarket" onclick="switchScreen('market')">
+        <div style="font-size: 16px;">🏃</div>
+        <span>انتقالات اللاعبين</span>
     </div>
 </nav>
 
 <script>
-    // مولد قاعدة بيانات الدوري الإنجليزي بالكامل (أكثر من 600 لاعب بجميع الأندية)
-    const teamsList = [
-        "أرسنال", "مانشستر سيتي", "ليفربول", "تشيلسي", "مانشستر يونايتد", 
-        "توتنهام", "نيوكاسل", "أستون فيلا", "برايتون", "وست هام",
-        "إيفرتون", "فولام", "برينتفورد", "بورنموث", "ولفرهامبتون",
-        "كريستال بالاس", "نوتينغهام فورست", "ليستر سيتي", "إيبسويتش تاون", "ساوثهابتون"
-    ];
-
-    const rolesConfig = [
-        { pos: 'GKP', countPerTeam: 3, prices: [5.5, 4.5, 4.0] },
-        { pos: 'DEF', countPerTeam: 9, prices: [6.0, 5.5, 5.0, 5.0, 4.5, 4.5, 4.0, 4.0, 4.0] },
-        { pos: 'MID', countPerTeam: 11, prices: [10.0, 8.5, 7.5, 7.0, 6.5, 6.0, 5.5, 5.0, 4.5, 4.5, 4.5] },
-        { pos: 'FWD', countPerTeam: 5, prices: [12.0, 8.5, 7.5, 6.0, 5.5] }
-    ];
-
-    // إعداد قاعدة البيانات بدون الحاجة لسيرفر خارجي نهائياً
-    let allPlayers = [];
-    let pid = 1;
-
-    teamsList.forEach(team => {
-        rolesConfig.forEach(role => {
-            for(let i = 1; i <= role.countPerTeam; i++) {
-                let name = `${team} - ${role.pos} ${i}`;
-                // تخصيص الأسماء الشهيرة في الفرق الكبرى لتجربة أصلية
-                if(team === "أرسنال") {
-                    if(role.pos==='GKP' && i===1) name = "دافيد رايا";
-                    if(role.pos==='DEF' && i===1) name = "ساليبا";
-                    if(role.pos==='DEF' && i===2) name = "غابرييل";
-                    if(role.pos==='MID' && i===1) name = "بوكايو ساكا";
-                    if(role.pos==='MID' && i===2) name = "مارتن أوديجارد";
-                    if(role.pos==='MID' && i===3) name = "تروسار";
-                    if(role.pos==='FWD' && i===1) name = "كاي هافيرتز";
-                } else if(team === "مانشستر سيتي") {
-                    if(role.pos==='FWD' && i===1) name = "إيرلينج هالاند";
-                    if(role.pos==='MID' && i===1) name = "كيفين دي بروين";
-                    if(role.pos==='MID' && i===2) name = "فيل فودين";
-                } else if(team === "ليفربول") {
-                    if(role.pos==='MID' && i===1) name = "محمد صلاح";
-                    if(role.pos==='DEF' && i===1) name = "فان دايك";
-                    if(role.pos==='GKP' && i===1) name = "أليسون بيكر";
-                }
-
-                allPlayers.push({
-                    id: pid++,
-                    name: name,
-                    club: team,
-                    pos: role.pos,
-                    price: role.prices[i-1] || 4.5
-                });
-            }
-        });
-    });
+    let playersDatabase = [];
+    let teamsMap = {};
+    const posMap = { 1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD' };
 
     let squad = [];
     let budget = 100.0;
-    let selectedPos = 'ALL';
-    let selectedClub = 'ALL';
+    let selectedPosFilter = 'ALL';
+    let selectedClubFilter = 'ALL';
+    let activePlayerModalId = null;
+    let captainId = null;
+    let viceCaptainId = null;
 
-    const slotsConfig = [
+    const formationSlots = [
         { pos: 'GKP', count: 2 },
         { pos: 'DEF', count: 5 },
         { pos: 'MID', count: 5 },
         { pos: 'FWD', count: 3 }
     ];
 
-    function buildClubFilters() {
-        const container = document.getElementById('clubFilters');
-        container.innerHTML = `<button class="f-btn active" onclick="setClub('ALL')">كل الأندية (20 نادٍ)</button>`;
-        teamsList.forEach(c => {
-            container.innerHTML += `<button class="f-btn" onclick="setClub('${c}')">${c}</button>`;
-        });
+    // Fetch Full FPL Database Live
+    async function fetchFPLData() {
+        try {
+            const proxyUrl = 'https://api.allorigins.win/raw?url=';
+            const targetUrl = 'https://fantasy.premierleague.com/api/bootstrap-static/';
+            const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
+            const data = await response.json();
+
+            // Map Teams
+            data.teams.forEach(t => teamsMap[t.id] = t.name);
+
+            // Map All Players
+            playersDatabase = data.elements.map(p => ({
+                id: p.id,
+                name: p.web_name,
+                fullName: `${p.first_name} ${p.second_name}`,
+                club: teamsMap[p.team] || 'Unknown',
+                pos: posMap[p.element_type],
+                price: p.now_cost / 10,
+                selectedBy: p.selected_by_percent,
+                totalPoints: p.total_points,
+                img: `https://resources.premierleague.com/premierleague/photos/players/250x250/p${p.code}.png`
+            }));
+
+            // Hide Loader
+            document.getElementById('loader').style.display = 'none';
+
+            // Init App Components
+            renderClubFilters();
+            renderPitch();
+            filterPlayers();
+            updateStats();
+
+        } catch (error) {
+            console.error(error);
+            alert('تعذر تحميل البيانات المباشرة، يرجى إعادة تنشيط الصفحة.');
+        }
     }
 
-    function switchTab(tab) {
+    function switchScreen(screenName) {
         document.getElementById('squadScreen').classList.remove('active');
         document.getElementById('marketScreen').classList.remove('active');
-        document.getElementById('tabSquad').classList.remove('active');
-        document.getElementById('tabMarket').classList.remove('active');
+        document.getElementById('navSquad').classList.remove('active');
+        document.getElementById('navMarket').classList.remove('active');
 
-        if(tab === 'squad') {
+        if(screenName === 'squad') {
             document.getElementById('squadScreen').classList.add('active');
-            document.getElementById('tabSquad').classList.add('active');
+            document.getElementById('navSquad').classList.add('active');
         } else {
             document.getElementById('marketScreen').classList.add('active');
-            document.getElementById('tabMarket').classList.add('active');
+            document.getElementById('navMarket').classList.add('active');
+            filterPlayers();
         }
     }
 
     function renderPitch() {
-        const pitch = document.getElementById('pitch');
+        const pitch = document.getElementById('pitchContainer');
         pitch.innerHTML = '';
 
-        slotsConfig.forEach(group => {
+        formationSlots.forEach(group => {
             const row = document.createElement('div');
             row.className = 'pitch-row';
+
             const posPlayers = squad.filter(p => p.pos === group.pos);
 
             for(let i = 0; i < group.count; i++) {
@@ -226,16 +557,28 @@
                 const card = document.createElement('div');
 
                 if(player) {
-                    card.className = 'slot filled';
+                    const isCap = player.id === captainId;
+                    const isVc = player.id === viceCaptainId;
+                    
+                    card.className = 'slot-card filled';
                     card.innerHTML = `
-                        <button class="remove-btn" onclick="togglePlayer(${player.id})">✕</button>
-                        <span class="name">${player.name}</span>
-                        <span class="price">£${player.price.toFixed(1)}m</span>
+                        ${isCap ? '<div class="captain-badge">C</div>' : ''}
+                        ${isVc ? '<div class="captain-badge" style="background:#ccc;">V</div>' : ''}
+                        <img src="${player.img}" alt="${player.name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/250x250/Photo-Missing.png'">
+                        <span class="p-name">${player.name}</span>
+                        <span class="p-price">£${player.price.toFixed(1)}m</span>
                     `;
+                    card.onclick = () => openModal(player.id);
                 } else {
-                    card.className = 'slot';
-                    card.innerHTML = `<span style="font-size:20px; color:var(--fpl-green);">+</span><span style="font-size:9px; color:#aaa;">${group.pos}</span>`;
-                    card.onclick = () => { setPos(group.pos); switchTab('market'); };
+                    card.className = 'slot-card';
+                    card.innerHTML = `
+                        <span style="font-size:20px; color:var(--fpl-green);">+</span>
+                        <span style="font-size:9px; color:#aaa;">${group.pos}</span>
+                    `;
+                    card.onclick = () => {
+                        setPosFilter(group.pos);
+                        switchScreen('market');
+                    };
                 }
                 row.appendChild(card);
             }
@@ -243,87 +586,199 @@
         });
     }
 
-    function togglePlayer(id) {
-        const p = allPlayers.find(x => x.id === id);
+    function addPlayer(id) {
+        const p = playersDatabase.find(x => x.id === id);
         if(!p) return;
 
-        const index = squad.findIndex(x => x.id === id);
-        if(index > -1) {
-            budget += p.price;
-            squad.splice(index, 1);
-        } else {
-            if(squad.length >= 15) return alert('⚠️ التشكيلة مكتملة بـ 15 لاعب!');
-            if(budget < p.price) return alert('⚠️ الميزانية غير كافية!');
-            
-            const posCount = squad.filter(x => x.pos === p.pos).length;
-            const maxPos = slotsConfig.find(x => x.pos === p.pos).count;
-            if(posCount >= maxPos) return alert(`⚠️ هذا المركز مكتمل (${p.pos})`);
-
-            const clubCount = squad.filter(x => x.club === p.club).length;
-            if(clubCount >= 3) return alert(`⚠️ الحد الأقصى 3 لاعبين من ${p.club}`);
-
-            squad.push(p);
-            budget -= p.price;
+        if(squad.some(x => x.id === id)) {
+            removePlayer(id);
+            return;
         }
 
-        document.getElementById('budget').innerText = `£${budget.toFixed(1)}m`;
-        document.getElementById('count').innerText = `${squad.length}/15`;
+        if(squad.length >= 15) { alert('⚠️ التشكيلة مكتملة بـ 15 لاعب!'); return; }
+        if(budget < p.price) { alert('⚠️ الميزانية غير كافية!'); return; }
+
+        const posCount = squad.filter(x => x.pos === p.pos).length;
+        const maxForPos = formationSlots.find(x => x.pos === p.pos).count;
+        if(posCount >= maxForPos) {
+            alert(`⚠️ القائمة مكتملة بهذا المركز (${p.pos})! قم بإزالة لاعب أولاً.`);
+            return;
+        }
+
+        const clubCount = squad.filter(x => x.club === p.club).length;
+        if(clubCount >= 3) {
+            alert(`⚠️ لا يمكن اختيار أكثر من 3 لاعبين من فريق واحد (${p.club})!`);
+            return;
+        }
+
+        squad.push(p);
+        budget -= p.price;
+        updateStats();
         renderPitch();
-        filterData();
+        filterPlayers();
     }
 
-    function setPos(pos) {
-        selectedPos = pos;
-        document.querySelectorAll('#posFilters .f-btn').forEach(b => {
-            b.classList.toggle('active', b.innerText.includes(pos) || (pos==='ALL' && b.innerText==='كل المراكز'));
+    function removePlayer(id) {
+        const idx = squad.findIndex(x => x.id === id);
+        if(idx > -1) {
+            budget += squad[idx].price;
+            if(captainId === id) captainId = null;
+            if(viceCaptainId === id) viceCaptainId = null;
+            squad.splice(idx, 1);
+            updateStats();
+            renderPitch();
+            filterPlayers();
+        }
+    }
+
+    function generateAISquad() {
+        squad = [];
+        budget = 100.0;
+        captainId = null;
+        viceCaptainId = null;
+
+        let sorted = [...playersDatabase].sort((a,b) => b.totalPoints - a.totalPoints || b.price - a.price);
+
+        formationSlots.forEach(group => {
+            let count = 0;
+            for(let p of sorted) {
+                if(p.pos === group.pos && count < group.count) {
+                    let clubCount = squad.filter(x => x.club === p.club).length;
+                    if(budget >= p.price && clubCount < 3) {
+                        squad.push(p);
+                        budget -= p.price;
+                        count++;
+                    }
+                }
+            }
         });
-        filterData();
+
+        if(squad.length > 0) captainId = squad[0].id;
+        if(squad.length > 1) viceCaptainId = squad[1].id;
+
+        updateStats();
+        renderPitch();
+        alert('✨ تم بناء التشكيلة بنجاح بواسطة الذكاء الاصطناعي بناءً على أعلى اللاعبين حصدًا للنقاط!');
     }
 
-    function setClub(club) {
-        selectedClub = club;
-        document.querySelectorAll('#clubFilters .f-btn').forEach(b => {
-            b.classList.toggle('active', b.innerText === club || (club==='ALL' && b.innerText.includes('كل الأندية')));
+    function updateStats() {
+        document.getElementById('budgetDisplay').innerText = '£' + budget.toFixed(1) + 'm';
+        document.getElementById('countDisplay').innerText = squad.length + '/15';
+        renderClubCounters();
+    }
+
+    function renderClubCounters() {
+        const counts = {};
+        squad.forEach(p => counts[p.club] = (counts[p.club] || 0) + 1);
+        
+        const container = document.getElementById('clubCounters');
+        container.innerHTML = '<b>الأندية المختارة:</b> ';
+        Object.keys(counts).forEach(club => {
+            const tag = document.createElement('span');
+            tag.className = `club-tag ${counts[club] >= 3 ? 'limit-reached' : ''}`;
+            tag.innerText = `${club}: ${counts[club]}/3`;
+            container.appendChild(tag);
         });
-        filterData();
     }
 
-    function filterData() {
-        const q = document.getElementById('search').value.toLowerCase();
-        const container = document.getElementById('playersList');
+    function setPosFilter(pos) {
+        selectedPosFilter = pos;
+        document.querySelectorAll('#positionFilters .filter-btn').forEach(b => {
+            b.classList.toggle('active', b.innerText.includes(pos) || (pos==='ALL' && b.innerText==='الكل'));
+        });
+        filterPlayers();
+    }
+
+    function filterPlayers() {
+        const query = document.getElementById('searchInput').value.toLowerCase();
+        const container = document.getElementById('playersListContainer');
         container.innerHTML = '';
 
-        const list = allPlayers.filter(p => {
-            const matchQ = p.name.toLowerCase().includes(q) || p.club.toLowerCase().includes(q);
-            const matchPos = selectedPos === 'ALL' || p.pos === selectedPos;
-            const matchClub = selectedClub === 'ALL' || p.club === selectedClub;
-            return matchQ && matchPos && matchClub;
+        const filtered = playersDatabase.filter(p => {
+            const matchesSearch = p.name.toLowerCase().includes(query) || p.fullName.toLowerCase().includes(query) || p.club.toLowerCase().includes(query);
+            const matchesPos = selectedPosFilter === 'ALL' || p.pos === selectedPosFilter;
+            const matchesClub = selectedClubFilter === 'ALL' || p.club === selectedClubFilter;
+            return matchesSearch && matchesPos && matchesClub;
         });
 
-        list.forEach(p => {
+        // Display top 50 results for fast UI rendering
+        filtered.slice(0, 50).forEach(p => {
             const inSquad = squad.some(x => x.id === p.id);
-            const card = document.createElement('div');
-            card.className = 'player-card';
-            card.innerHTML = `
-                <div class="p-details">
-                    <bold>${p.name}</bold>
-                    <small>${p.club} | <b style="color:var(--fpl-green);">${p.pos}</b></small>
+            const item = document.createElement('div');
+            item.className = 'player-row-item';
+            item.innerHTML = `
+                <div class="p-info-left">
+                    <img src="${p.img}" alt="${p.name}" onerror="this.src='https://resources.premierleague.com/premierleague/photos/players/250x250/Photo-Missing.png'">
+                    <div class="p-details">
+                        <div>${p.name} <small style="color:#888;">(${p.fullName})</small></div>
+                        <small>${p.club} | <b style="color:var(--fpl-green);">${p.pos}</b> | نقاط: ${p.totalPoints}</small>
+                    </div>
                 </div>
                 <div>
-                    <span style="font-weight:bold; margin-left:8px;">£${p.price.toFixed(1)}m</span>
-                    <button class="add-btn ${inSquad ? 'in-squad' : ''}" onclick="togglePlayer(${p.id})">
-                        ${inSquad ? 'إزالة' : 'إضافة +'}
+                    <span style="font-weight:bold; font-size:13px; margin-left:6px;">£${p.price.toFixed(1)}m</span>
+                    <button class="btn-add-p ${inSquad ? 'in-squad' : ''}" onclick="addPlayer(${p.id})">
+                        ${inSquad ? 'إزالة' : '+'}
                     </button>
                 </div>
             `;
-            container.appendChild(card);
+            container.appendChild(item);
         });
     }
 
-    buildClubFilters();
-    renderPitch();
-    filterData();
+    function openModal(id) {
+        activePlayerModalId = id;
+        const p = squad.find(x => x.id === id);
+        if(!p) return;
+        document.getElementById('modalPlayerName').innerText = p.name;
+        document.getElementById('playerModal').style.display = 'flex';
+    }
+
+    function closeModal() {
+        document.getElementById('playerModal').style.display = 'none';
+        activePlayerModalId = null;
+    }
+
+    function setCaptain(type) {
+        if(!activePlayerModalId) return;
+        if(type === 'C') {
+            if(viceCaptainId === activePlayerModalId) viceCaptainId = null;
+            captainId = activePlayerModalId;
+        } else {
+            if(captainId === activePlayerModalId) captainId = null;
+            viceCaptainId = activePlayerModalId;
+        }
+        closeModal();
+        renderPitch();
+    }
+
+    function removeSelectedPlayer() {
+        if(activePlayerModalId) {
+            removePlayer(activePlayerModalId);
+            closeModal();
+        }
+    }
+
+    function renderClubFilters() {
+        const clubs = ['ALL', ...new Set(playersDatabase.map(p => p.club))];
+        const clubFiltersContainer = document.getElementById('clubFilters');
+        clubFiltersContainer.innerHTML = '';
+        clubs.forEach(c => {
+            const btn = document.createElement('button');
+            btn.className = 'filter-btn' + (c === 'ALL' ? ' active' : '');
+            btn.innerText = c === 'ALL' ? 'كل الأندية' : c;
+            btn.onclick = () => {
+                selectedClubFilter = c;
+                document.querySelectorAll('#clubFilters .filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                filterPlayers();
+            };
+            clubFiltersContainer.appendChild(btn);
+        });
+    }
+
+    // Start fetching FPL Data on startup
+    fetchFPLData();
 </script>
+
 </body>
 </html>
-
