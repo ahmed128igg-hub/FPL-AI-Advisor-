@@ -3,179 +3,190 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>FPL Official Manager 2026/27</title>
-    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <title>FPL Ultra Manager 2026/27</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;800;900&display=swap" rel="stylesheet">
     <style>
         :root {
             --fpl-purple: #37003c;
             --fpl-green: #00ff87;
             --fpl-pink: #e90052;
-            --bg-dark: #12001a;
-            --card-bg: #22002a;
-            --bench-bg: #1a0022;
+            --fpl-cyan: #04f5ff;
+            --bg-dark: #0f0114;
+            --card-glass: rgba(255, 255, 255, 0.05);
+            --card-border: rgba(255, 255, 255, 0.1);
         }
 
-        * { box-sizing: border-box; user-select: none; }
+        * { box-sizing: border-box; user-select: none; margin: 0; padding: 0; }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Poppins', system-ui, -apple-system, sans-serif;
             background-color: var(--bg-dark);
             color: #ffffff;
-            margin: 0;
             padding-bottom: 75px;
+            overflow-x: hidden;
         }
 
-        /* Loading Screen */
-        #loader {
-            position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-            background: var(--fpl-purple); z-index: 9999;
+        /* Splash Screen with Official FPL Vibe */
+        #splash-screen {
+            position: fixed; inset: 0;
+            background: radial-gradient(circle at center, #590062 0%, var(--fpl-purple) 100%);
+            z-index: 10000;
             display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.5s ease, visibility 0.5s;
         }
-        .spinner {
-            width: 50px; height: 50px; border: 5px solid rgba(255,255,255,0.2);
-            border-top-color: var(--fpl-green); border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+
+        .splash-logo {
+            width: 110px; height: 110px;
+            background: #fff; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 0 30px rgba(0, 255, 135, 0.4);
+            animation: pulse 1.5s infinite ease-in-out;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .splash-logo img { width: 75px; height: 75px; object-fit: contain; }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 135, 0.7); }
+            70% { transform: scale(1.05); box-shadow: 0 0 0 20px rgba(0, 255, 135, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(0, 255, 135, 0); }
+        }
 
         header {
-            background: var(--fpl-purple);
-            border-bottom: 3px solid var(--fpl-green);
-            padding: 10px 15px; position: sticky; top: 0; z-index: 100;
+            background: rgba(55, 0, 60, 0.85);
+            backdrop-filter: blur(10px);
+            border-bottom: 2px solid var(--fpl-green);
+            padding: 12px 16px; position: sticky; top: 0; z-index: 100;
             display: flex; justify-content: space-between; align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
         }
 
-        header h1 { margin: 0; font-size: 15px; color: var(--fpl-green); font-weight: 900; }
-        .hud-stats { display: flex; gap: 8px; }
-        .stat-badge { background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; font-size: 11px; text-align: center; }
+        header h1 { font-size: 16px; color: var(--fpl-green); font-weight: 900; letter-spacing: 0.5px; }
+        
+        .hud-stats { display: flex; gap: 10px; }
+        .stat-badge {
+            background: var(--card-glass); border: 1px solid var(--card-border);
+            padding: 4px 10px; border-radius: 8px; font-size: 11px; text-align: center;
+        }
         .stat-badge span { color: var(--fpl-green); font-weight: bold; }
 
-        .main-container { max-width: 900px; margin: 0 auto; padding: 10px; }
+        .main-container { max-width: 800px; margin: 0 auto; padding: 12px; }
         .screen { display: none; }
         .screen.active { display: block; }
 
-        .ai-bar {
-            background: var(--card-bg); padding: 10px; border-radius: 8px; margin-bottom: 10px;
-            display: flex; justify-content: space-between; align-items: center;
-            border: 1px solid rgba(255,255,255,0.1);
-        }
-
+        /* Quick AI Generator Button */
         .btn-ai {
-            width: 100%;
-            background: linear-gradient(45deg, #00ff87, #00b0ff);
-            color: #000; border: none; padding: 10px; font-weight: bold; font-size: 13px;
-            border-radius: 6px; cursor: pointer; text-align: center;
+            width: 100%; margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--fpl-green), var(--fpl-cyan));
+            color: #000; border: none; padding: 12px; font-weight: 800; font-size: 13px;
+            border-radius: 10px; cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 255, 135, 0.3);
+            transition: transform 0.2s;
         }
+        .btn-ai:active { transform: scale(0.98); }
 
-        /* Green Grass Classic Pitch Layout */
-        .pitch-container {
-            background: #238823;
-            background-image: 
-                linear-gradient(rgba(255, 255, 255, 0.2) 2px, transparent 2px),
-                linear-gradient(90deg, rgba(255, 255, 255, 0.2) 2px, transparent 2px);
-            background-size: 100% 20%, 50% 100%;
-            border: 4px solid #ffffff; border-radius: 12px 12px 0 0;
-            padding: 15px 5px; min-height: 440px;
+        /* Modern 3D Stadium Field */
+        .pitch {
+            background: linear-gradient(180deg, #165b26 0%, #0d3817 100%);
+            border: 2px solid rgba(255,255,255,0.8);
+            border-radius: 16px; padding: 15px 5px; min-height: 480px;
             display: flex; flex-direction: column; justify-content: space-between;
-            box-shadow: inset 0 0 20px rgba(0,0,0,0.3);
+            position: relative; overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
         }
 
-        .bench-container {
-            background: var(--bench-bg);
-            border: 4px solid #ffffff; border-top: none;
-            border-radius: 0 0 12px 12px;
-            padding: 10px 5px; margin-bottom: 15px;
+        .pitch::before {
+            content: ''; position: absolute; top: 50%; left: 0; right: 0;
+            height: 2px; background: rgba(255,255,255,0.3);
         }
 
-        .bench-title { font-size: 11px; font-weight: bold; color: var(--fpl-green); text-align: center; margin-bottom: 6px; }
+        .pitch-row { display: flex; justify-content: center; gap: 6px; z-index: 2; }
 
-        .pitch-row { display: flex; justify-content: center; gap: 8px; margin: 4px 0; }
+        .bench-box {
+            background: rgba(20, 0, 25, 0.9);
+            border: 1px solid var(--card-border);
+            border-radius: 12px; padding: 10px; margin-top: 12px;
+        }
+        .bench-title { font-size: 11px; color: var(--fpl-cyan); text-align: center; font-weight: bold; margin-bottom: 8px; }
 
-        .slot-card {
-            background: rgba(55, 0, 60, 0.95);
-            border: 1.5px solid rgba(255,255,255,0.4); border-radius: 8px;
-            width: calc(20% - 4px); max-width: 75px; min-width: 55px; height: 95px;
+        /* Sleek Player Slots */
+        .slot {
+            background: rgba(30, 0, 40, 0.85);
+            border: 1px solid rgba(255,255,255,0.2); border-radius: 10px;
+            width: 20%; max-width: 72px; min-width: 58px; height: 100px;
             display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-            padding: 4px 2px; cursor: pointer; position: relative;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+            padding: 4px; cursor: pointer; position: relative; backdrop-filter: blur(4px);
+            transition: all 0.2s ease;
         }
+        .slot.filled { border-color: var(--fpl-green); background: rgba(55, 0, 60, 0.9); }
+        .slot img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: rgba(255,255,255,0.1); }
+        .slot .p-name { font-size: 8.5px; font-weight: 700; width: 100%; text-align: center; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .slot .p-price { font-size: 8px; color: var(--fpl-green); font-weight: bold; }
 
-        .slot-card.filled { border: 2px solid var(--fpl-green); background: var(--fpl-purple); }
-        .slot-card img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; background: #fff; }
-
-        .slot-card .p-name {
-            font-size: 8.5px; font-weight: bold; white-space: nowrap; overflow: hidden;
-            text-overflow: ellipsis; width: 100%; text-align: center; color: #fff;
-        }
-
-        .slot-card .p-price { font-size: 8px; color: var(--fpl-green); font-weight: bold; }
-
-        .captain-badge {
-            position: absolute; top: -5px; right: -5px;
+        .c-badge {
+            position: absolute; top: -4px; right: -4px;
             background: #ffcc00; color: #000; font-weight: 900; font-size: 9px;
-            width: 17px; height: 17px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center; border: 1px solid #000;
+            width: 18px; height: 18px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center; border: 1.5px solid #000;
         }
 
-        /* Market & Filters */
+        /* Market Cards */
         .search-box {
-            width: 100%; padding: 10px; border-radius: 6px;
-            border: 1px solid #4a0052; background: #190022; color: #fff; margin-bottom: 10px;
+            width: 100%; padding: 12px; border-radius: 8px;
+            border: 1px solid var(--card-border); background: rgba(255,255,255,0.05);
+            color: #fff; margin-bottom: 10px; font-size: 13px; outline: none;
         }
+        .search-box:focus { border-color: var(--fpl-green); }
 
-        .filter-bar { display: flex; gap: 6px; margin-bottom: 10px; overflow-x: auto; padding-bottom: 5px; }
+        .filter-bar { display: flex; gap: 6px; margin-bottom: 12px; overflow-x: auto; }
         .filter-btn {
-            background: #280033; color: #ccc; border: 1px solid #4a0052;
-            padding: 6px 12px; border-radius: 15px; font-size: 11px; cursor: pointer; white-space: nowrap;
+            background: rgba(255,255,255,0.05); color: #ccc; border: 1px solid var(--card-border);
+            padding: 6px 14px; border-radius: 20px; font-size: 11px; cursor: pointer; white-space: nowrap;
         }
-        .filter-btn.active { background: var(--fpl-green); color: #000; font-weight: bold; }
+        .filter-btn.active { background: var(--fpl-green); color: #000; font-weight: 800; }
 
-        .players-list { display: flex; flex-direction: column; gap: 8px; }
-        .player-row-item {
-            background: var(--card-bg); border-radius: 8px; padding: 8px 12px;
-            display: flex; align-items: center; justify-content: space-between; border: 1px solid #3d004c;
+        .player-card {
+            background: var(--card-glass); border: 1px solid var(--card-border);
+            border-radius: 10px; padding: 10px 14px; margin-bottom: 8px;
+            display: flex; align-items: center; justify-content: space-between;
         }
-        .p-info-left { display: flex; align-items: center; gap: 10px; }
-        .p-info-left img { width: 40px; height: 40px; border-radius: 50%; background: #fff; object-fit: cover; }
+        .player-card img { width: 42px; height: 42px; border-radius: 50%; background: #fff; }
 
-        .btn-add-p { background: var(--fpl-green); color: #000; border: none; padding: 6px 12px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .btn-add-p.in-squad { background: var(--fpl-pink); color: #fff; }
-
-        /* Advice Section */
-        .advice-card {
-            background: var(--card-bg); border: 1px solid #4a0052; border-radius: 8px;
-            padding: 12px; margin-bottom: 10px;
+        .btn-add {
+            background: var(--fpl-green); color: #000; border: none;
+            padding: 6px 14px; border-radius: 6px; font-weight: 800; cursor: pointer;
         }
-        .advice-card h3 { color: var(--fpl-green); margin-top: 0; font-size: 14px; border-bottom: 1px solid #4a0052; padding-bottom: 5px; }
-        .advice-item { display: flex; justify-content: space-between; font-size: 12px; padding: 6px 0; border-bottom: 1px dashed rgba(255,255,255,0.1); }
-        .badge-tag { background: var(--fpl-pink); padding: 2px 6px; border-radius: 4px; font-size: 10px; font-weight: bold; }
+        .btn-add.added { background: var(--fpl-pink); color: #fff; }
 
-        .bottom-nav {
+        /* Navigation */
+        .nav-bar {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: var(--fpl-purple); border-top: 2px solid var(--fpl-green);
-            display: flex; justify-around; padding: 8px 0; z-index: 1000;
+            background: rgba(55, 0, 60, 0.95); backdrop-filter: blur(10px);
+            border-top: 1px solid var(--card-border);
+            display: flex; justify-content: space-around; padding: 10px 0; z-index: 1000;
         }
-        .nav-item { display: flex; flex-direction: column; align-items: center; color: #aaa; font-size: 11px; cursor: pointer; }
-        .nav-item.active { color: var(--fpl-green); font-weight: bold; }
+        .nav-btn { display: flex; flex-direction: column; align-items: center; color: #888; font-size: 10px; cursor: pointer; }
+        .nav-btn.active { color: var(--fpl-green); font-weight: bold; }
 
-        .modal { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
-        .modal-content { background: var(--card-bg); border: 2px solid var(--fpl-green); border-radius: 12px; padding: 20px; width: 85%; max-width: 320px; text-align: center; }
-        .modal-btn { width: 100%; padding: 10px; margin: 5px 0; border-radius: 6px; border: none; font-weight: bold; cursor: pointer; }
+        /* Modal Popup */
+        .modal { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.8); z-index: 2000; align-items: center; justify-content: center; }
+        .modal-box { background: var(--fpl-purple); border: 1px solid var(--fpl-green); border-radius: 14px; padding: 20px; width: 85%; max-width: 300px; text-align: center; }
+        .modal-btn { width: 100%; padding: 10px; margin: 5px 0; border-radius: 8px; border: none; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div id="loader">
-    <div class="spinner"></div>
-    <p id="loaderStatus" style="margin-top: 15px; font-weight: bold; font-size: 13px;">جاري تحميل كافة لاعبي الدوري الإنجليزي من FPL...</p>
+<!-- Splash Screen -->
+<div id="splash-screen">
+    <div class="splash-logo">
+        <img src="https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg" alt="FPL Logo">
+    </div>
+    <h2 style="margin-top:20px; font-size:16px; color:var(--fpl-green); font-weight:800;">FPL Pro 2026/27</h2>
 </div>
 
 <header>
-    <h1>⚽ FPL Pro 2026/27</h1>
+    <h1>⚽ FPL ULTRA</h1>
     <div class="hud-stats">
-        <div class="stat-badge">الميزانية: <span id="budgetDisplay">£100.0m</span></div>
-        <div class="stat-badge">اللاعبين: <span id="countDisplay">0/15</span></div>
+        <div class="stat-badge">الميزانية: <span id="budgetText">£100.0m</span></div>
+        <div class="stat-badge">اللاعبين: <span id="countText">0/15</span></div>
     </div>
 </header>
 
@@ -183,401 +194,293 @@
 
     <!-- Squad Screen -->
     <div id="squadScreen" class="screen active">
-        <div class="ai-bar">
-            <button class="btn-ai" onclick="generateSmartAISquad()">🤖 تشكيلة الذكاء الاصطناعي التلقائية (15 لاعب)</button>
-        </div>
+        <button class="btn-ai" onclick="autoGenerateSquad()">⚡ إنشاء تشكيلة الذكاء الاصطناعي تلقائياً</button>
+        
+        <div class="pitch" id="pitchLayout"></div>
 
-        <!-- Classic Football Pitch -->
-        <div class="pitch-container" id="mainPitch"></div>
-
-        <!-- Bench Section -->
-        <div class="bench-container">
-            <div class="bench-title">مقاعد البدلاء (الدكة)</div>
-            <div class="pitch-row" id="benchRow"></div>
+        <div class="bench-box">
+            <div class="bench-title">مقاعد البدلاء (4 لاعبين)</div>
+            <div class="pitch-row" id="benchLayout"></div>
         </div>
     </div>
 
     <!-- Market Screen -->
     <div id="marketScreen" class="screen">
-        <input type="text" class="search-box" id="searchInput" placeholder="🔍 ابحث باسم اللاعب، النادي، أو المركز..." oninput="filterPlayers()">
-        
-        <div class="filter-bar" id="positionFilters">
-            <button class="filter-btn active" onclick="setPosFilter('ALL')">الكل</button>
-            <button class="filter-btn" onclick="setPosFilter('GKP')">حراس (GKP)</button>
-            <button class="filter-btn" onclick="setPosFilter('DEF')">دفاع (DEF)</button>
-            <button class="filter-btn" onclick="setPosFilter('MID')">وسط (MID)</button>
-            <button class="filter-btn" onclick="setPosFilter('FWD')">هجوم (FWD)</button>
+        <input type="text" class="search-box" id="searchInput" placeholder="🔍 ابحث باسم اللاعب، النادي، أو المركز..." oninput="renderMarket()">
+        <div class="filter-bar">
+            <button class="filter-btn active" onclick="setFilter('ALL')">الكل</button>
+            <button class="filter-btn" onclick="setFilter('GKP')">حراس</button>
+            <button class="filter-btn" onclick="setFilter('DEF')">دفاع</button>
+            <button class="filter-btn" onclick="setFilter('MID')">وسط</button>
+            <button class="filter-btn" onclick="setFilter('FWD')">هجوم</button>
         </div>
-
-        <div class="players-list" id="playersListContainer"></div>
-    </div>
-
-    <!-- Advice Screen -->
-    <div id="adviceScreen" class="screen">
-        <div class="advice-card">
-            <h3>🎯 نصائح الكابتن للجولة القادمة</h3>
-            <div class="advice-item">
-                <span><b>محمد صلاح</b> (ليفربول)</span>
-                <span class="badge-tag">خيار أول</span>
-            </div>
-            <div class="advice-item">
-                <span><b>إرلينغ هالاند</b> (مانشستر سيتي)</span>
-                <span class="badge-tag">خيار ثاني</span>
-            </div>
-            <div class="advice-item">
-                <span><b>بوكايو ساكا</b> (أرسنال)</span>
-                <span class="badge-tag">خيار آمن</span>
-            </div>
-        </div>
-
-        <div class="advice-card">
-            <h3>🎯 منفذو ركلات الجزاء والضربات الحرة</h3>
-            <div class="advice-item"><span><b>أرسنال:</b> ساكا (جزاء) / رايس (حرة)</span></div>
-            <div class="advice-item"><span><b>ليفربول:</b> صلاح (جزاء) / ألكسندر أرنولد (حرة)</span></div>
-            <div class="advice-item"><span><b>تشيلسي:</b> كول بالمر (ركلات جزاء وحرة)</span></div>
-            <div class="advice-item"><span><b>مانشستر سيتي:</b> هالاند (جزاء) / دي بروين (حرة)</span></div>
-        </div>
+        <div id="marketList"></div>
     </div>
 
 </div>
 
 <!-- Player Action Modal -->
 <div class="modal" id="playerModal">
-    <div class="modal-content">
-        <h3 id="modalPlayerName" style="margin-top:0; color:var(--fpl-green);">اسم اللاعب</h3>
-        <button class="modal-btn" style="background:var(--fpl-green); color:#000;" onclick="setCaptain('C')">تعيين كابتن (C)</button>
-        <button class="modal-btn" style="background:#e1e1e1; color:#000;" onclick="setCaptain('VC')">تعيين نائب كابتن (VC)</button>
-        <button class="modal-btn" style="background:var(--fpl-pink); color:#fff;" onclick="removeSelectedPlayer()">إزالة من التشكيلة ✕</button>
-        <button class="modal-btn" style="background:#555; color:#fff;" onclick="closeModal()">إلغاء</button>
+    <div class="modal-box">
+        <h3 id="modalName" style="color:var(--fpl-green); margin-bottom:12px;"></h3>
+        <button class="modal-btn" style="background:var(--fpl-green); color:#000;" onclick="makeCaptain('C')">تعيين كابتن (C)</button>
+        <button class="modal-btn" style="background:#ddd; color:#000;" onclick="makeCaptain('VC')">تعيين نائب (VC)</button>
+        <button class="modal-btn" style="background:var(--fpl-pink); color:#fff;" onclick="removePlayerFromSquad()">إزالة من الفريق</button>
+        <button class="modal-btn" style="background:#444; color:#fff;" onclick="closeModal()">إغلاق</button>
     </div>
 </div>
 
-<nav class="bottom-nav">
-    <div class="nav-item active" id="navSquad" onclick="switchScreen('squad')">
-        <div style="font-size: 16px;">🏟️</div>
-        <span>التشكيلة والدكة</span>
+<nav class="nav-bar">
+    <div class="nav-btn active" id="btnNavSquad" onclick="tab('squad')">
+        <div style="font-size:18px;">🏟️</div>
+        <span>الملعب</span>
     </div>
-    <div class="nav-item" id="navMarket" onclick="switchScreen('market')">
-        <div style="font-size: 16px;">🏃</div>
-        <span>سوق الانتقالات</span>
-    </div>
-    <div class="nav-item" id="navAdvice" onclick="switchScreen('advice')">
-        <div style="font-size: 16px;">💡</div>
-        <span>النصائح</span>
+    <div class="nav-btn" id="btnNavMarket" onclick="tab('market')">
+        <div style="font-size:18px;">🏃</div>
+        <span>الانتقالات</span>
     </div>
 </nav>
 
 <script>
-    let playersDatabase = [];
+    let db = [];
     let squad = [];
     let budget = 100.0;
-    let selectedPosFilter = 'ALL';
-    let activePlayerModalId = null;
-    let captainId = null;
-    let viceCaptainId = null;
+    let filterPos = 'ALL';
+    let activePlayerId = null;
+    let capId = null;
+    let vcId = null;
 
-    const pitchStructure = [
+    const pitchFormation = [
         { pos: 'GKP', count: 1 },
         { pos: 'DEF', count: 4 },
         { pos: 'MID', count: 4 },
         { pos: 'FWD', count: 2 }
     ];
 
-    const fallbackImg = "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg";
+    const logoFallback = "https://upload.wikimedia.org/wikipedia/en/f/f2/Premier_League_Logo.svg";
 
     window.addEventListener('DOMContentLoaded', () => {
-        loadOfficialFPLData();
+        fetchFPLDataFast();
     });
 
-    async function loadOfficialFPLData() {
-        const targetUrl = 'https://fantasy.premierleague.com/api/bootstrap-static/';
-        
-        // سيرفرات بروكسي متعددة كخط حماية ضد التوقف
-        const proxies = [
-            `https://corsproxy.io/?${encodeURIComponent(targetUrl)}`,
-            `https://api.allorigins.win/raw?url=${encodeURIComponent(targetUrl)}`
+    // Multi-Server Fast Auto Fetcher
+    async function fetchFPLDataFast() {
+        const target = 'https://fantasy.premierleague.com/api/bootstrap-static/';
+        const servers = [
+            `https://corsproxy.io/?${encodeURIComponent(target)}`,
+            `https://api.allorigins.win/raw?url=${encodeURIComponent(target)}`,
+            `https://proxy.cors.sh/${target}`
         ];
 
-        let data = null;
-
-        for (let url of proxies) {
+        for (let server of servers) {
             try {
-                const res = await fetch(url);
+                const res = await fetch(server);
                 if (res.ok) {
-                    data = await res.json();
-                    if (data && data.elements) break;
+                    const data = await res.json();
+                    if (data && data.elements) {
+                        parseData(data);
+                        hideSplash();
+                        return;
+                    }
                 }
             } catch (e) {
-                console.warn('Proxy failed, trying fallback...', url);
+                console.warn('Trying next fast server...');
             }
         }
-
-        if (data && data.elements) {
-            let teamsMap = {};
-            data.teams.forEach(t => teamsMap[t.id] = t.name);
-
-            const posMap = { 1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD' };
-            
-            playersDatabase = data.elements.map(p => ({
-                id: p.id,
-                name: p.web_name,
-                club: teamsMap[p.team] || 'Premier League',
-                pos: posMap[p.element_type],
-                price: p.now_cost / 10,
-                points: p.total_points,
-                img: `https://resources.premierleague.com/premierleague/photos/players/250x250/p${p.code}.png`
-            }));
-
-            document.getElementById('loader').style.display = 'none';
-            renderPitchAndBench();
-            filterPlayers();
-        } else {
-            document.getElementById('loaderStatus').innerText = "جاري إعادة الاتصال بسيرفر الفانتازي المباشر...";
-            setTimeout(loadOfficialFPLData, 2000);
-        }
     }
 
-    function switchScreen(screenName) {
+    function parseData(data) {
+        let teams = {};
+        data.teams.forEach(t => teams[t.id] = t.name);
+        const posNames = { 1: 'GKP', 2: 'DEF', 3: 'MID', 4: 'FWD' };
+
+        db = data.elements.map(p => ({
+            id: p.id,
+            name: p.web_name,
+            club: teams[p.team] || 'EPL',
+            pos: posNames[p.element_type],
+            price: p.now_cost / 10,
+            pts: p.total_points,
+            img: `https://resources.premierleague.com/premierleague/photos/players/250x250/p${p.code}.png`
+        }));
+
+        renderPitch();
+        renderMarket();
+    }
+
+    function hideSplash() {
+        const splash = document.getElementById('splash-screen');
+        splash.style.opacity = '0';
+        setTimeout(() => splash.style.display = 'none', 500);
+    }
+
+    function tab(name) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
 
-        if(screenName === 'squad') {
+        if(name === 'squad') {
             document.getElementById('squadScreen').classList.add('active');
-            document.getElementById('navSquad').classList.add('active');
-        } else if(screenName === 'market') {
+            document.getElementById('btnNavSquad').classList.add('active');
+        } else {
             document.getElementById('marketScreen').classList.add('active');
-            document.getElementById('navMarket').classList.add('active');
-            filterPlayers();
-        } else if(screenName === 'advice') {
-            document.getElementById('adviceScreen').classList.add('active');
-            document.getElementById('navAdvice').classList.add('active');
+            document.getElementById('btnNavMarket').classList.add('active');
+            renderMarket();
         }
     }
 
-    function renderPitchAndBench() {
-        const mainPitch = document.getElementById('mainPitch');
-        const benchRow = document.getElementById('benchRow');
-        mainPitch.innerHTML = '';
-        benchRow.innerHTML = '';
+    function renderPitch() {
+        const pitch = document.getElementById('pitchLayout');
+        const bench = document.getElementById('benchLayout');
+        pitch.innerHTML = ''; bench.innerHTML = '';
 
-        let starters = squad.slice(0, 11);
-        pitchStructure.forEach(group => {
+        let mainStarters = squad.slice(0, 11);
+        pitchFormation.forEach(group => {
             const row = document.createElement('div');
             row.className = 'pitch-row';
-
-            const posStarters = starters.filter(p => p.pos === group.pos);
+            const posStarters = mainStarters.filter(p => p.pos === group.pos);
 
             for(let i = 0; i < group.count; i++) {
-                const player = posStarters[i];
-                const card = createPlayerSlotCard(player, group.pos);
-                row.appendChild(card);
+                row.appendChild(createSlotCard(posStarters[i], group.pos));
             }
-            mainPitch.appendChild(row);
+            pitch.appendChild(row);
         });
 
-        let bench = squad.slice(11, 15);
-        const benchRequirements = ['GKP', 'DEF', 'MID', 'FWD'];
-        
+        let benchPlayers = squad.slice(11, 15);
+        const benchPos = ['GKP', 'DEF', 'MID', 'FWD'];
         for(let i = 0; i < 4; i++) {
-            const player = bench[i];
-            const card = createPlayerSlotCard(player, benchRequirements[i]);
-            benchRow.appendChild(card);
+            bench.appendChild(createSlotCard(benchPlayers[i], benchPos[i]));
         }
     }
 
-    function createPlayerSlotCard(player, defaultPos) {
+    function createSlotCard(p, pos) {
         const card = document.createElement('div');
-        if(player) {
-            const isCap = player.id === captainId;
-            const isVc = player.id === viceCaptainId;
-            card.className = 'slot-card filled';
+        if(p) {
+            const isC = p.id === capId;
+            const isVc = p.id === vcId;
+            card.className = 'slot filled';
             card.innerHTML = `
-                ${isCap ? '<div class="captain-badge">C</div>' : ''}
-                ${isVc ? '<div class="captain-badge" style="background:#ccc;">V</div>' : ''}
-                <img src="${player.img}" alt="${player.name}" onerror="this.src='${fallbackImg}'">
-                <span class="p-name">${player.name}</span>
-                <span class="p-price">£${player.price.toFixed(1)}m</span>
+                ${isC ? '<div class="c-badge">C</div>' : ''}
+                ${isVc ? '<div class="c-badge" style="background:#ccc">V</div>' : ''}
+                <img src="${p.img}" onerror="this.src='${logoFallback}'">
+                <span class="p-name">${p.name}</span>
+                <span class="p-price">£${p.price.toFixed(1)}m</span>
             `;
-            card.onclick = () => openModal(player.id);
+            card.onclick = () => openModal(p.id);
         } else {
-            card.className = 'slot-card';
-            card.innerHTML = `
-                <span style="font-size:18px; color:var(--fpl-green);">+</span>
-                <span style="font-size:9px; color:#aaa;">${defaultPos}</span>
-            `;
-            card.onclick = () => {
-                setPosFilter(defaultPos);
-                switchScreen('market');
-            };
+            card.className = 'slot';
+            card.innerHTML = `<span style="font-size:20px; color:var(--fpl-green)">+</span><span style="font-size:9px; color:#aaa">${pos}</span>`;
+            card.onclick = () => { setFilter(pos); tab('market'); };
         }
         return card;
     }
 
-    function generateSmartAISquad() {
-        if(playersDatabase.length === 0) return;
-        
-        squad = [];
-        budget = 100.0;
-        captainId = null;
-        viceCaptainId = null;
-
+    function autoGenerateSquad() {
+        if(!db.length) return;
+        squad = []; budget = 100.0; capId = null; vcId = null;
         const limits = { 'GKP': 2, 'DEF': 5, 'MID': 5, 'FWD': 3 };
         const counts = { 'GKP': 0, 'DEF': 0, 'MID': 0, 'FWD': 0 };
 
-        let pool = [...playersDatabase].sort((a,b) => b.points - a.points);
-
-        for(let p of pool) {
+        let sorted = [...db].sort((a,b) => b.pts - a.pts);
+        for(let p of sorted) {
             if(squad.length >= 15) break;
-            
-            let clubCount = squad.filter(x => x.club === p.club).length;
-            
-            if(counts[p.pos] < limits[p.pos] && clubCount < 3 && budget >= p.price) {
-                let remainingSlots = 15 - (squad.length + 1);
-                let remainingBudget = budget - p.price;
-
-                if(remainingSlots === 0 || remainingBudget >= (remainingSlots * 4.0)) {
+            let clubCnt = squad.filter(x => x.club === p.club).length;
+            if(counts[p.pos] < limits[p.pos] && clubCnt < 3 && budget >= p.price) {
+                if((15 - squad.length - 1) === 0 || (budget - p.price) >= ((14 - squad.length) * 4.0)) {
                     squad.push(p);
                     counts[p.pos]++;
                     budget -= p.price;
                 }
             }
         }
-
-        if(squad.length < 15) {
-            let cheapest = [...playersDatabase].sort((a,b) => a.price - b.price);
-            for(let p of cheapest) {
-                if(squad.length >= 15) break;
-                if(squad.some(x => x.id === p.id)) continue;
-                
-                let clubCount = squad.filter(x => x.club === p.club).length;
-                if(counts[p.pos] < limits[p.pos] && clubCount < 3 && budget >= p.price) {
-                    squad.push(p);
-                    counts[p.pos]++;
-                    budget -= p.price;
-                }
-            }
-        }
-
-        if(squad.length > 0) captainId = squad[0].id;
-        if(squad.length > 1) viceCaptainId = squad[1].id;
-
-        updateStats();
-        renderPitchAndBench();
-        alert('✨ تم بناء التشكيلة بنجاح! 11 أساسياً + 4 بدلاء برصيد £100m.');
+        if(squad.length > 0) capId = squad[0].id;
+        if(squad.length > 1) vcId = squad[1].id;
+        updateHud(); renderPitch();
     }
 
-    function addPlayer(id) {
-        const p = playersDatabase.find(x => x.id === id);
+    function togglePlayer(id) {
+        const p = db.find(x => x.id === id);
         if(!p) return;
-
-        if(squad.some(x => x.id === id)) { removePlayer(id); return; }
-        if(squad.length >= 15) { alert('⚠️ التشكيلة مكتملة بـ 15 لاعبًا بالكامل!'); return; }
-        if(budget < p.price) { alert('⚠️ الميزانية غير كافية!'); return; }
-
-        const clubCount = squad.filter(x => x.club === p.club).length;
-        if(clubCount >= 3) { alert(`⚠️ لا يمكن اختيار أكثر من 3 لاعبين من نادي (${p.club})!`); return; }
-
-        squad.push(p);
-        budget -= p.price;
-        updateStats();
-        renderPitchAndBench();
-        filterPlayers();
-    }
-
-    function removePlayer(id) {
         const idx = squad.findIndex(x => x.id === id);
+
         if(idx > -1) {
             budget += squad[idx].price;
-            if(captainId === id) captainId = null;
-            if(viceCaptainId === id) viceCaptainId = null;
+            if(capId === id) capId = null;
+            if(vcId === id) vcId = null;
             squad.splice(idx, 1);
-            updateStats();
-            renderPitchAndBench();
-            filterPlayers();
+        } else {
+            if(squad.length >= 15) return alert('التشكيلة مكتملة (15/15)!');
+            if(budget < p.price) return alert('الميزانية لا تكفي!');
+            if(squad.filter(x => x.club === p.club).length >= 3) return alert('الحد الأقصى 3 لاعبين من نفس الفريق!');
+            squad.push(p);
+            budget -= p.price;
         }
+        updateHud(); renderPitch(); renderMarket();
     }
 
-    function updateStats() {
-        document.getElementById('budgetDisplay').innerText = '£' + budget.toFixed(1) + 'm';
-        document.getElementById('countDisplay').innerText = squad.length + '/15';
+    function updateHud() {
+        document.getElementById('budgetText').innerText = '£' + budget.toFixed(1) + 'm';
+        document.getElementById('countText').innerText = squad.length + '/15';
     }
 
-    function setPosFilter(pos) {
-        selectedPosFilter = pos;
-        document.querySelectorAll('#positionFilters .filter-btn').forEach(b => {
-            b.classList.toggle('active', b.innerText.includes(pos) || (pos==='ALL' && b.innerText==='الكل'));
+    function setFilter(pos) {
+        filterPos = pos;
+        document.querySelectorAll('.filter-btn').forEach(b => {
+            b.classList.toggle('active', b.innerText.includes(pos) || (pos === 'ALL' && b.innerText === 'الكل'));
         });
-        filterPlayers();
+        renderMarket();
     }
 
-    function filterPlayers() {
+    function renderMarket() {
         const query = document.getElementById('searchInput').value.toLowerCase();
-        const container = document.getElementById('playersListContainer');
+        const container = document.getElementById('marketList');
         container.innerHTML = '';
 
-        const filtered = playersDatabase.filter(p => {
-            const matchesSearch = p.name.toLowerCase().includes(query) || p.club.toLowerCase().includes(query);
-            const matchesPos = selectedPosFilter === 'ALL' || p.pos === selectedPosFilter;
-            return matchesSearch && matchesPos;
+        const list = db.filter(p => {
+            const mQ = p.name.toLowerCase().includes(query) || p.club.toLowerCase().includes(query);
+            const mP = filterPos === 'ALL' || p.pos === filterPos;
+            return mQ && mP;
         });
 
-        filtered.slice(0, 80).forEach(p => {
-            const inSquad = squad.some(x => x.id === p.id);
-            const item = document.createElement('div');
-            item.className = 'player-row-item';
-            item.innerHTML = `
-                <div class="p-info-left">
-                    <img src="${p.img}" alt="${p.name}" onerror="this.src='${fallbackImg}'">
+        list.slice(0, 50).forEach(p => {
+            const inS = squad.some(x => x.id === p.id);
+            const card = document.createElement('div');
+            card.className = 'player-card';
+            card.innerHTML = `
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <img src="${p.img}" onerror="this.src='${logoFallback}'">
                     <div>
                         <div style="font-weight:bold; font-size:13px;">${p.name}</div>
                         <small style="color:#aaa;">${p.club} | <b style="color:var(--fpl-green);">${p.pos}</b></small>
                     </div>
                 </div>
                 <div>
-                    <span style="font-weight:bold; font-size:13px; margin-left:6px;">£${p.price.toFixed(1)}m</span>
-                    <button class="btn-add-p ${inSquad ? 'in-squad' : ''}" onclick="addPlayer(${p.id})">
-                        ${inSquad ? 'إزالة' : '+'}
-                    </button>
+                    <span style="font-weight:bold; font-size:12px; margin-left:8px;">£${p.price.toFixed(1)}m</span>
+                    <button class="btn-add ${inS ? 'added' : ''}" onclick="togglePlayer(${p.id})">${inS ? 'إزالة' : '+'}</button>
                 </div>
             `;
-            container.appendChild(item);
+            container.appendChild(card);
         });
     }
 
     function openModal(id) {
-        activePlayerModalId = id;
+        activePlayerId = id;
         const p = squad.find(x => x.id === id);
         if(!p) return;
-        document.getElementById('modalPlayerName').innerText = p.name;
+        document.getElementById('modalName').innerText = p.name;
         document.getElementById('playerModal').style.display = 'flex';
     }
 
-    function closeModal() {
-        document.getElementById('playerModal').style.display = 'none';
-        activePlayerModalId = null;
+    function closeModal() { document.getElementById('playerModal').style.display = 'none'; }
+
+    function makeCaptain(type) {
+        if(type === 'C') { capId = activePlayerId; if(vcId === activePlayerId) vcId = null; }
+        else { vcId = activePlayerId; if(capId === activePlayerId) capId = null; }
+        closeModal(); renderPitch();
     }
 
-    function setCaptain(type) {
-        if(!activePlayerModalId) return;
-        if(type === 'C') {
-            if(viceCaptainId === activePlayerModalId) viceCaptainId = null;
-            captainId = activePlayerModalId;
-        } else {
-            if(captainId === activePlayerModalId) captainId = null;
-            viceCaptainId = activePlayerModalId;
-        }
-        closeModal();
-        renderPitchAndBench();
-    }
-
-    function removeSelectedPlayer() {
-        if(activePlayerModalId) {
-            removePlayer(activePlayerModalId);
-            closeModal();
-        }
+    function removePlayerFromSquad() {
+        togglePlayer(activePlayerId); closeModal();
     }
 </script>
-
 </body>
 </html>
-
